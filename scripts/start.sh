@@ -23,8 +23,9 @@ fi
 
 # Initialize state files
 echo '[]' > prd.json
-touch build-progress.txt inspect-progress.txt
+echo '[]' > qa-hints.json
 echo '[]' > qa-report.json
+touch build-progress.txt inspect-progress.txt
 
 echo "Starting watchdog..."
 echo "=================================="
