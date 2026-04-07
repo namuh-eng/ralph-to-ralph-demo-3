@@ -1,16 +1,1 @@
-[
-  {
-    "id": "US-001",
-    "title": "Clean up ralph/docs/ — remove stale docs, keep diagram",
-    "description": "Delete future-cloud-providers.md and onboarding-guide.md (stale, not needed during loop). Keep architecture-diagram.png as visual reference.",
-    "acceptanceCriteria": [
-      "ralph/docs/future-cloud-providers.md is deleted",
-      "ralph/docs/onboarding-guide.md is deleted",
-      "ralph/docs/architecture-diagram.png still exists",
-      "Changes committed and pushed"
-    ],
-    "build_pass": false,
-    "qa_pass": false,
-    "passes": false
-  }
-]
+[]
