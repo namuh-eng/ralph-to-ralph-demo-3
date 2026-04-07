@@ -150,6 +150,48 @@ Run verification commands for each service they claimed is ready. Only check wha
 | Cloudflare | Check `.env` for `CLOUDFLARE_API_TOKEN` | Key exists and is non-empty |
 | Ever CLI | `ever --version` | Returns a version |
 | Docker | `docker info` | Daemon is running |
+| Google OAuth | Check `.env` for `AUTH_GOOGLE_ID` | Key exists and is non-empty |
+
+### Google OAuth verification (if target product needs auth)
+
+If the target product uses Google OAuth and `AUTH_GOOGLE_ID` + `AUTH_GOOGLE_SECRET` are found in `.env`, perform these additional checks:
+
+1. **Calculate the callback URL** from `BETTER_AUTH_URL` (or `NEXT_PUBLIC_APP_URL`, or default `http://localhost:3015`):
+   ```
+   {BETTER_AUTH_URL}/api/auth/callback/google
+   ```
+
+2. **Show a checklist** the user must complete in Google Cloud Console:
+   ```
+   ⚠ Google OAuth — MANUAL SETUP REQUIRED
+     Your keys are set, but you must configure these in Google Cloud Console:
+   
+     1. Go to: https://console.cloud.google.com/apis/credentials
+     2. Click your OAuth 2.0 Client ID
+     3. Add these Authorized redirect URIs:
+        → http://localhost:3015/api/auth/callback/google  (dev)
+        → https://your-domain.com/api/auth/callback/google  (prod, when ready)
+     4. Go to OAuth consent screen → Publishing status
+        → Set to "External" and click "Publish App"
+        → OR: keep in "Testing" mode and add your Google test account
+     5. If using Ever CLI for QA: add the Google account that your
+        browser is already logged into as a test user. Ever CLI uses
+        the existing browser session — if that account isn't authorized,
+        automated OAuth flows will fail during QA.
+   
+     Have you done this? (yes / I'll do it now / skip for later)
+   ```
+
+3. **Wait for confirmation** before proceeding. If the user says "skip", add to pending with a warning that QA will fail on auth features.
+
+4. **Record in setup checks:**
+   ```json
+   "google-oauth": { "envVar": "AUTH_GOOGLE_ID", "status": "pass", "detail": "Keys found. Redirect URI + consent screen: user confirmed." }
+   ```
+   Or if skipped:
+   ```json
+   "google-oauth": { "envVar": "AUTH_GOOGLE_ID", "status": "pending", "error": "Keys found but redirect URI and consent screen not verified — QA will fail on auth." }
+   ```
 
 ### How to run verification
 

@@ -222,6 +222,29 @@ If `DATABASE_URL` not found:
 > **Missing: Database URL** (critical)
 > Add `DATABASE_URL=postgresql://...` to `.env`. The preflight script will set this up if you haven't already.
 
+### Google OAuth (if target product uses auth with Google)
+```bash
+# Check for AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET (DEFERRABLE — only if clone has Google auth)
+grep -q '^AUTH_GOOGLE_ID=.' .env 2>/dev/null
+grep -q '^AUTH_GOOGLE_SECRET=.' .env 2>/dev/null
+```
+
+If keys are found, **also verify the OAuth app configuration**:
+
+1. Calculate the callback URL: `{BETTER_AUTH_URL}/api/auth/callback/google` (default: `http://localhost:3015/api/auth/callback/google`)
+2. Tell the user to verify in Google Cloud Console (https://console.cloud.google.com/apis/credentials):
+   - **Authorized redirect URIs** must include the callback URL above
+   - **OAuth consent screen** must be set to "External" and published, OR the user's test Google account must be added as a test user
+   - **If using Ever CLI for QA**: the Google account the browser is already logged into must be an authorized test user — Ever CLI uses the existing browser session, so automated OAuth flows will fail if that account isn't authorized
+3. Record as `"pass"` only if the user confirms they've done this. Record as `"pending"` with a warning if skipped.
+
+> **Google OAuth keys found — manual configuration required** (deferrable)
+> Add this redirect URI in Google Cloud Console → Credentials → Your OAuth Client:
+>   `http://localhost:3015/api/auth/callback/google`
+> Also: set OAuth consent screen to "External" + Published, or add your test Google account.
+> If using Ever CLI: add the Google account your browser is logged into as a test user.
+> Skipping this will cause auth features to fail during QA.
+
 ### AWS
 ```bash
 aws --version                    # AWS CLI must be installed
