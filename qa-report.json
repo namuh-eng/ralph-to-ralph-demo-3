@@ -1,0 +1,19 @@
+[
+  {
+    "feature_id": "infra-001",
+    "attempt": 1,
+    "status": "pass",
+    "tested_steps": [
+      "Ran `make test` and confirmed 1512 unit tests passed.",
+      "Ran `npx playwright test tests/e2e/smoke.spec.ts` and confirmed 11 smoke tests passed.",
+      "Ran `make db-push` against RDS Postgres and confirmed Drizzle completed with `No changes detected`.",
+      "Verified the live database contains the expected public tables: organizations, user, org_memberships, projects, deployments, pages, api_keys, agent_jobs, assistant_conversations, analytics_events, and audit_logs.",
+      "Inserted parent and child records in a transaction, deleted the organization, and confirmed cascading deletes removed memberships, projects, pages, deployments, API keys, agent jobs, assistant conversations, analytics events, and audit logs.",
+      "Verified unique indexes reject duplicate organization slugs and duplicate org memberships with Postgres error code `23505`.",
+      "Verified enum columns reject invalid `organizations.plan` and `deployments.status` values with Postgres error code `22P02`.",
+      "Verified default JSON/JSONB values are correct in practice: organizations.settings `{}`, projects.settings `{}`, pages.frontmatter `{}`, agent_jobs.messages `[]`, assistant_conversations.messages `[]`, analytics_events.data `{}`, and audit_logs.details `{}`."
+    ],
+    "bugs_found": [],
+    "fix_description": "no fix needed"
+  }
+]
