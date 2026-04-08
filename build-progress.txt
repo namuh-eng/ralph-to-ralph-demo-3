@@ -676,3 +676,46 @@ Date: 2026-04-08
 - Reused existing hashApiKey/verifyApiKey from api-keys.ts for key lookup
 - lastUsedAt updated fire-and-forget on successful auth (non-blocking)
 - Build simulation matches existing dashboard deployment flow (3s completion)
+
+## Iteration 8 — api-002: REST API Assistant Endpoints
+Date: 2026-04-08
+
+### What was built
+- Assistant helper module (`src/lib/assistant.ts`) with validation and formatting functions:
+  - `validateCreateMessageRequest` — validates fp, messages array, optional threadId/retrievalPageSize/currentPath
+  - `validateSearchRequest` — validates query, pageSize (1-50, default 10), scoreThreshold
+  - `validateGetPageContentRequest` — validates and normalizes path (strips slashes)
+  - `buildSearchQuery` — builds ILIKE pattern with SQL wildcard escaping
+  - `formatSearchResult` — formats page into search result with truncated content snippet (500 chars)
+  - `formatPageContentResponse` — formats page content response
+- Three API routes:
+  - `POST /api/v1/assistant/create-message` — streams AI responses via AWS Bedrock (Claude Sonnet 4), retrieves relevant published pages as context, persists conversation to DB, sends SSE events (text-delta, sources, finish)
+  - `POST /api/v1/assistant/search` — keyword search across published pages using ILIKE on title/content/path, returns results with content snippets and metadata
+  - `POST /api/v1/assistant/get-page-content` — retrieves full page content by path, returns 404 if not found or unpublished
+- All endpoints use assistant API key auth (Bearer token), org-scoped (only returns pages from the key's org)
+- Installed `@aws-sdk/client-bedrock-runtime` for Bedrock streaming
+
+### Test results
+- 26 new unit tests (assistant-api.test.ts) — all passing
+- 6 new E2E tests (assistant-api.spec.ts) — written, QA will verify
+- 397 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/assistant.ts — new, validation + formatting helpers
+- src/app/api/v1/assistant/create-message/route.ts — new, streaming AI endpoint
+- src/app/api/v1/assistant/search/route.ts — new, search endpoint
+- src/app/api/v1/assistant/get-page-content/route.ts — new, page content endpoint
+- tests/assistant-api.test.ts — new, 26 unit tests
+- tests/e2e/assistant-api.spec.ts — new, 6 E2E tests
+- package.json — added @aws-sdk/client-bedrock-runtime
+- prd.json — api-002 build_pass set to true
+- qa-hints.json — added api-002 QA hints
+
+### Decisions
+- Used POST for all 3 endpoints (matches target Mintlify API shape from discovery-openapi.json)
+- Bedrock model: us.anthropic.claude-sonnet-4-20250514 with temperature 0.3 and maxTokens 2048
+- Search uses ILIKE keyword matching (not semantic/vector) — sufficient for initial version
+- Page context limited to retrievalPageSize (default 5, max 20) with 2000 char per page
+- Conversation persisted fire-and-forget after streaming completes
+- SSE format: data: JSON\n\n with types text-delta, sources, finish, error
