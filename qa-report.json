@@ -15,5 +15,40 @@
     ],
     "bugs_found": [],
     "fix_description": "no fix needed"
+  },
+  {
+    "feature_id": "infra-002",
+    "attempt": 1,
+    "status": "pass",
+    "tested_steps": [
+      "Ran `make test` and confirmed the full unit suite passed before deeper QA.",
+      "Ran `npx playwright test tests/e2e/smoke.spec.ts` and confirmed smoke coverage still passed.",
+      "Confirmed an unauthenticated `POST /api/uploads/presign` and `GET /api/uploads/presign` returned live S3 presigned URLs, reproducing a storage auth bypass before the fix.",
+      "Added route-level auth + org membership enforcement and verified the same unauthenticated POST now returns `401 Unauthorized`.",
+      "Generated a real Better Auth session cookie tied to a dedicated QA org/project in Postgres, then requested an authorized upload presign and confirmed the URL encoded a 900 second (`X-Amz-Expires=900`) expiry window.",
+      "Uploaded a real text file to S3 via the presigned PUT URL and verified the authorized download presign returned the uploaded `hello infra002` payload.",
+      "Verified real bucket CORS with an `OPTIONS` preflight to the presigned URL: `Access-Control-Allow-Origin: http://localhost:3015`, methods `GET, PUT, POST`, and `Access-Control-Allow-Headers: content-type`.",
+      "Requested a 49 MiB upload presign, uploaded the file successfully, and confirmed the stored S3 object content length was `51380224` bytes with content type `video/mp4`.",
+      "Requested an upload larger than 50 MiB and verified the app rejected it with `400 Bad Request` and `File exceeds maximum size of 52428800 bytes`.",
+      "Requested a presign for a 5 byte upload and attempted to PUT a 10 byte body; S3 rejected it with `403 SignatureDoesNotMatch`, confirming the signed content length is enforced.",
+      "Requested two presigned URLs for the same key, uploaded `AAAAAA` and `BBBBBB` concurrently, and verified both writes succeeded with the final stored object resolving to one winner (`BBBBBB` in this run), i.e. last-write-wins overwrite semantics with no object lock."
+    ],
+    "bugs_found": [
+      {
+        "severity": "critical",
+        "description": "The uploads presign API minted real S3 upload and download URLs for unauthenticated callers and for arbitrary org/project identifiers.",
+        "expected": "Only authenticated members of the target project's organization should be able to mint upload/download presigned URLs, and only admins/editors should be allowed to upload new assets.",
+        "actual": "Anonymous requests received fully usable presigned S3 URLs for both PUT and GET operations.",
+        "reproduction": "POST `http://localhost:3015/api/uploads/presign` with any orgId/projectId/filename/contentType body, or GET `/api/uploads/presign?key=...`, without cookies."
+      },
+      {
+        "severity": "major",
+        "description": "The advertised 50 MB upload cap was only enforced in the client and the presigned URL did not bind the upload size.",
+        "expected": "Oversized uploads should be rejected server-side and the presigned PUT should enforce the expected content length.",
+        "actual": "Before the fix, the route accepted any size because `size` was not validated and the signed request omitted `content-length`.",
+        "reproduction": "Request a presigned URL without a size field and upload any body length directly to S3."
+      }
+    ],
+    "fix_description": "Locked `/api/uploads/presign` behind authenticated project access, restricted uploads to admin/editor roles, required a `size` field, and signed `Content-Length` so real S3 uploads enforce the 50 MB limit."
   }
 ]
