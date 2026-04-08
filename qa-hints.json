@@ -646,5 +646,23 @@
       "Verify mode() aggregate in visitors endpoint returns correct top page/referrer",
       "Edge case: very large offset returns empty data array with correct total"
     ]
+  },
+  {
+    "feature_id": "api-004",
+    "tests_written": [
+      "validateUuid accepts/rejects UUIDs",
+      "validateCreateJobInput validates projectId + prompt",
+      "validateSendMessageInput validates content field",
+      "formatAgentJobResponse formats dates, messages, prUrl",
+      "E2E: 401 without auth on all 3 endpoints",
+      "E2E: 400 for invalid job ID format"
+    ],
+    "needs_deeper_qa": [
+      "Full authenticated flow: create job → get job → send message (requires valid API key)",
+      "Simulated background processing transitions (pending → running → succeeded)",
+      "Concurrent message sends to same job",
+      "Message ordering in messages array",
+      "Job status transition to 409 Conflict when sending message to succeeded/failed job"
+    ]
   }
 ]

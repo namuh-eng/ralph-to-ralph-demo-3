@@ -1027,3 +1027,36 @@ Date: 2026-04-09
 - Searches aggregates by query string with count; feedback-by-page uses filter(where) for helpful/not_helpful counts
 - Assistant conversations returns full message arrays; caller-stats aggregates using jsonb_array_length
 - Date boundaries: dateFrom → T00:00:00Z, dateTo → T23:59:59.999Z (inclusive range)
+
+## Iteration 17 — api-004: REST API Agent Endpoints
+Date: 2026-04-09
+
+### What was built
+- Agent job REST API with admin key authentication:
+  - `POST /api/v1/agent/create-job` — creates an agent job for a project, starts simulated background processing (pending → running → succeeded)
+  - `GET /api/v1/agent/get-job/{jobId}` — returns job status, PR link, and messages; validates org ownership
+  - `POST /api/v1/agent/send-message/{jobId}` — appends a follow-up user message to a job's messages array; 409 for completed/failed jobs
+- Utility library `src/lib/api-v1-agents.ts` with validation (UUID, create-job input, send-message input) and response formatting
+- Added `messages` JSON column to `agent_jobs` schema — stores array of `{role, content, timestamp}` objects
+- Schema pushed to RDS Postgres via `make db-push`
+
+### Test results
+- 22 new unit tests (api-v1-agents.test.ts) — all passing
+- 6 new E2E tests (agent-api.spec.ts) — written, QA will verify
+- 551 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/db/schema.ts — added `messages` column to agentJobs table
+- src/lib/api-v1-agents.ts — new, validation + formatting utilities
+- src/app/api/v1/agent/create-job/route.ts — new, POST create-job endpoint
+- src/app/api/v1/agent/get-job/[jobId]/route.ts — new, GET get-job endpoint
+- src/app/api/v1/agent/send-message/[jobId]/route.ts — new, POST send-message endpoint
+- tests/api-v1-agents.test.ts — new, 22 unit tests
+- tests/e2e/agent-api.spec.ts — new, 6 E2E tests
+
+### Decisions
+- Initial user prompt is stored as first message in the messages array on job creation
+- Only pending/running jobs accept new messages (409 Conflict for succeeded/failed)
+- Background processing is simulated with setTimeout (pending→running at 500ms, running→succeeded at 5s)
+- PR URL is auto-generated during simulation for demo purposes
