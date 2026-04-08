@@ -2054,3 +2054,44 @@ Date: 2026-04-09
 - Reused existing DELETE /api/projects/[id] for deployment deletion (adds reason in body)
 - Confirmation requires exact case-sensitive name match — standard destructive action UX pattern
 - Reason field enforces 3-1000 character limits both client-side and server-side
+
+## Iteration 44 — deploy-001: Production Deployment
+Date: 2026-04-09
+
+### What was built
+- Deploy utilities module (`src/lib/deploy.ts`) with health check response builder, deploy config validation, image URI builder, service name generator, and deploy env filtering (allowlist-based)
+- Health check API endpoint (`GET /api/health`) — public, no auth required:
+  - Tests database connectivity via `SELECT 1`
+  - Checks S3 availability via env var presence
+  - Returns status (ok/degraded), version, ISO timestamp, uptime, and dependency check results
+  - Returns 200 for ok, 503 for degraded
+- Deploy script (`scripts/deploy.sh`) — full production deployment pipeline:
+  - Docker build (linux/amd64 platform for App Runner)
+  - ECR authentication and image push (tagged + latest)
+  - Environment variable preparation with allowlist filtering (excludes DB_PASSWORD, CLOUDFLARE tokens)
+  - App Runner service creation or update with health check configuration
+  - Polls for deployment completion and verifies health check
+  - IAM role auto-creation for ECR access
+  - Outputs live URL on success
+- E2E tests for health check endpoint (5 tests)
+
+### Test results
+- 18 new unit tests (deploy.test.ts) — all passing
+- 5 new E2E tests (health.spec.ts) — written, QA will verify
+- 1105 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/deploy.ts — new, deploy utilities and health check helpers
+- src/app/api/health/route.ts — new, health check API endpoint
+- scripts/deploy.sh — new, full deploy pipeline (Docker → ECR → App Runner)
+- tests/deploy.test.ts — new, 18 unit tests
+- tests/e2e/health.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Health check is public (no auth) — standard practice for load balancers and monitoring
+- S3 check uses env var presence instead of actual S3 API call — keeps response fast
+- Deploy env allowlist excludes DB_PASSWORD, CLOUDFLARE_API_TOKEN — security best practice
+- App Runner health check configured at /api/health with 10s interval, 5s timeout
+- Docker image tagged with git SHA and "latest" for versioning
+- IAM role created on first deploy with AWSAppRunnerServicePolicyForECRAccess

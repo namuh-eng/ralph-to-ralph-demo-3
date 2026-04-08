@@ -1258,5 +1258,23 @@
       "Non-admin users should see 403 on delete attempts",
       "Last project deletion edge case (prevented by existing API logic)"
     ]
+  },
+  {
+    "feature_id": "deploy-001",
+    "tests_written": [
+      "Health check returns ok/degraded status with dependency checks",
+      "Health check response includes ISO timestamp and uptime",
+      "Deploy config validation rejects missing/invalid fields",
+      "ECR image URI builder appends tag correctly",
+      "Service name generator creates name from app+env",
+      "Deploy env filtering excludes sensitive vars"
+    ],
+    "needs_deeper_qa": [
+      "Actual Docker build + ECR push — requires Docker running",
+      "App Runner service creation — requires IAM permissions and may take 5+ minutes",
+      "Health check DB connectivity — test env may not have real DB connection",
+      "Deploy script with real credentials — verify env vars reach the service",
+      "Custom domain configuration — not implemented in deploy script yet"
+    ]
   }
 ]
