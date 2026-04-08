@@ -550,5 +550,27 @@
       "Chat persistence in assistantConversations table",
       "Edge case: very long messages, special characters, markdown in responses"
     ]
+  },
+  {
+    "feature_id": "feature-014b",
+    "tests_written": [
+      "getGroupName returns parent segment titleized for nested pages",
+      "getGroupName returns null for root-level pages",
+      "pageToMarkdown creates markdown with title as H1",
+      "slugifyHeading converts heading text to URL-safe slug",
+      "titleize converts slug to title case",
+      "page title visible with copy and actions buttons",
+      "heading anchors show link icon on hover",
+      "breadcrumb shows group name in green above title",
+      "previous/next navigation links visible",
+      "copy page button copies content to clipboard"
+    ],
+    "needs_deeper_qa": [
+      "Clipboard API may not work in all browsers — test copy page in Safari/Firefox",
+      "Heading anchor smooth scroll + URL hash update in real page with many headings",
+      "More actions dropdown positioning when page is scrolled",
+      "Light theme styling for page action buttons and dropdown",
+      "Mobile responsive layout of title row with action buttons"
+    ]
   }
 ]

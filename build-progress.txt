@@ -883,3 +883,43 @@ Date: 2026-04-09
 - Conversation persisted fire-and-forget to avoid blocking the stream
 - Source links point to /docs/[subdomain]/[path] for in-site navigation
 - AbortController used for fetch cancellation on unmount
+
+## Iteration 14 — feature-014b: Docs Page Chrome
+Date: 2026-04-09
+
+### What was built
+- Page chrome utility library (`src/lib/page-chrome.ts`) with getGroupName, titleize, pageToMarkdown, slugifyHeading
+- Page header actions client component (`src/components/docs/page-chrome.tsx`):
+  - Copy page button: copies full page as markdown (H1 title + content) to clipboard, shows checkmark confirmation for 2s
+  - More actions kebab dropdown with "Copy link" (copies current URL) and "View source" options
+  - Dropdown closes on outside click
+- Heading anchors client component (`HeadingAnchors`):
+  - Injects anchor link icon spans into all heading anchors after mount
+  - Icon appears on hover via CSS (inline SVG link icon in green)
+  - Click handler: smooth scrolls to heading and updates URL hash
+- Breadcrumb refactored: now shows group name (parent path segment, titleized) in green text above H1 instead of full path breadcrumb trail. Only appears for nested pages (pages in groups).
+- Title row layout: H1 title + action buttons in flex row with space-between
+- Full CSS for dark and light themes: action buttons, dropdown menu, heading anchor icon
+- Light theme overrides for all new elements
+
+### Test results
+- 15 new unit tests (page-chrome.test.ts) — all passing
+- 5 new E2E tests (page-chrome.spec.ts) — written, QA will verify
+- 482 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/page-chrome.ts — new, page chrome utilities
+- src/components/docs/page-chrome.tsx — new, PageHeaderActions + HeadingAnchors client components
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, uses new breadcrumb group name, title row with actions, heading anchors
+- src/app/globals.css — updated, added page chrome CSS (title row, action buttons, dropdown, heading anchor icon, light theme)
+- tests/page-chrome.test.ts — new, 15 unit tests
+- tests/e2e/page-chrome.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Breadcrumb simplified to show only group name (parent segment) in green, not full path trail — matches Mintlify's "group name above title" pattern
+- Heading anchor icons injected client-side via DOM manipulation (HeadingAnchors component) since HTML is server-rendered
+- Copy page uses pageToMarkdown helper to reconstruct clean markdown (H1 + content)
+- More actions dropdown uses click-outside pattern with useRef for closing
+- Anchor click uses smooth scroll + replaceState for clean URL hash updates without page jump
+- SVG link icon encoded as data URI in CSS to avoid extra network requests
