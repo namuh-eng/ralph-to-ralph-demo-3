@@ -93,5 +93,40 @@
     ],
     "bugs_found": [],
     "fix_description": "no fix needed"
+  },
+  {
+    "feature_id": "auth-003",
+    "attempt": 1,
+    "status": "pass",
+    "tested_steps": [
+      "Ran `make test` and confirmed the unit suite passed with 1521 tests before deeper QA.",
+      "Ran the smoke suite against the active dev server and confirmed all 11 smoke tests passed.",
+      "Used Ever CLI on `http://localhost:3015/settings/organization/api-keys` with the real Google-authenticated session to verify the page renders, create an assistant key through the modal, confirm the one-time reveal, confirm copy-to-clipboard flips to `Copied!`, and confirm revoke removes the key from the list. Saved screenshots to `ralph/screenshots/qa/auth-003-created-key.jpg` and `ralph/screenshots/qa/auth-003-after-revoke.jpg`.",
+      "Created a real admin API key and a real assistant API key for org `auth-002-qa-org`, then verified the admin key successfully authenticated `POST /api/v1/project/update/3c9de81a-cca7-4673-aaf5-29bc69aea5f7` with `201 Created` and a deployment status id.",
+      "Verified assistant-route auth against the live server: before the fix, `POST /api/v1/assistant/search` returned `500 Internal Server Error` for both a valid assistant key and a valid admin key; after the fix, the same assistant key returned `200 OK` and the admin key returned `403 Forbidden — assistant API key required`.",
+      "Queried Postgres after the live API requests and confirmed `api_keys.last_used_at` updated for the keys that successfully authenticated.",
+      "Demoted the real org membership in Postgres from `admin` to `editor` and then `viewer`, and from the still-authenticated browser session verified both roles received `403 Forbidden — admin role required` on `POST /api/api-keys` and `DELETE /api/api-keys/:id`. Restored the membership to `admin` afterward.",
+      "Issued 10 concurrent `POST /api/api-keys` requests in the same org and confirmed all 10 returned `201 Created` with distinct `mint_` key prefixes, so no collision or race failure occurred in this run.",
+      "Cleaned up the QA-created API keys from the live org after verification.",
+      "Added authenticated Playwright coverage for the assistant-key auth contract and re-ran `tests/e2e/api-keys.spec.ts`, which passed 7/7 after updating stale assertions to match the current UI contract.",
+      "Ran `make check && make test` after the fix and confirmed typecheck, lint/format, and the full unit suite passed."
+    ],
+    "bugs_found": [
+      {
+        "severity": "major",
+        "description": "Assistant API routes returned `500 Internal Server Error` for valid assistant keys instead of serving the request.",
+        "expected": "A valid `mint_dsc_` assistant key should authenticate assistant routes and return a normal JSON response, even when the search result set is empty.",
+        "actual": "A real `POST /api/v1/assistant/search` with a valid assistant key updated `last_used_at` but failed with an empty `500` response.",
+        "reproduction": "Create a real assistant API key from `/settings/organization/api-keys`, then `curl -X POST http://localhost:3015/api/v1/assistant/search -H 'Authorization: Bearer <assistant-key>' -H 'Content-Type: application/json' -d '{\"query\":\"getting started\",\"pageSize\":3}'`."
+      },
+      {
+        "severity": "major",
+        "description": "Assistant-only API routes accepted admin keys.",
+        "expected": "Routes documented as requiring assistant API keys should reject `mint_` admin keys with `403 Forbidden`.",
+        "actual": "Before the fix, a real `mint_` admin key authenticated assistant routes and reached the route logic instead of being rejected.",
+        "reproduction": "Create a real admin API key from `/settings/organization/api-keys`, then `curl -X POST http://localhost:3015/api/v1/assistant/search -H 'Authorization: Bearer <admin-key>' -H 'Content-Type: application/json' -d '{\"query\":\"getting started\",\"pageSize\":3}'`."
+      }
+    ],
+    "fix_description": "Replaced the assistant-route project scoping query with `inArray(...)`, enforced assistant-only key type checks across the assistant v1 routes, and tightened the API-key E2E coverage to exercise real assistant/admin bearer-key behavior."
   }
 ]
