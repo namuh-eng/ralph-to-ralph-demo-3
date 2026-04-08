@@ -22,12 +22,12 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 - `npm run dev` — dev server on port **3015**
 - `npm run build` — production build
 
-## AWS Infrastructure (provision with scripts/preflight.sh)
+## AWS + Neon Infrastructure (provision with scripts/preflight.sh)
 Run `bash scripts/preflight.sh` before starting the loop. It creates:
-- **RDS Postgres** — database instance, connection string added to `.env`
-- **S3** — storage bucket with CORS
+- **Neon Postgres** — database already provisioned, connection string in `.env`
+- **S3** — storage bucket with CORS for doc assets
 - **ECR** — Docker image repository
-- **SES** — email identity verification
+- **Better Auth** — generates `BETTER_AUTH_SECRET`, sets `BETTER_AUTH_URL`
 
 ## Cloudflare DNS (optional)
 If you want auto-configure for domain verification, add to `.env`:
