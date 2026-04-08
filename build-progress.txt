@@ -763,3 +763,43 @@ Date: 2026-04-08
 - Used emerald-600 for selected date range highlighting, matching Mintlify green accent
 - Sub-tabs use border-bottom-2 active indicator (solid white when active)
 - Switching traffic source resets to /analytics base path (first tab of new mode)
+
+## Iteration 11 — feature-007a: Analytics Visitors Tab
+Date: 2026-04-09
+
+### What was built
+- Analytics visitors utility library (`src/lib/analytics-visitors.ts`) with types (DailyVisitorCount, TopPage, Referral, VisitorsData), date range generator, date key formatter, path truncation, daily count gap-filler, chart date formatter
+- API route `GET /api/analytics/visitors?projectId=&from=&to=` — aggregates analytics_events (type=view) into daily counts, top pages (by data->>'page'), and referrals (by data->>'referrer'), with auth + org membership verification
+- Visitors tab page (`/analytics`) — full implementation with:
+  - "Visitors Over Time" heading with total count
+  - Recharts ComposedChart: bar chart (emerald fill) + line overlay (emerald stroke) with daily visitor counts
+  - Interactive tooltip (dark theme), grid lines, date axis labels
+  - Top pages table: page path (truncated with title tooltip) + views count, sorted desc
+  - Referrals table: source name (e.g., "$direct") + views count, sorted desc
+  - Tables displayed side-by-side (2-column grid on md+)
+  - Loading skeleton state with animated pulse placeholders
+  - Agent mode empty state: "No visitor activity" with icon
+- Installed Recharts dependency
+- Date range from URL params flows through to API calls; missing dates filled with zero counts
+
+### Test results
+- 18 new unit tests (analytics-visitors.test.ts) — all passing
+- 6 new E2E tests (analytics-visitors.spec.ts) — written, QA will verify
+- 436 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/analytics-visitors.ts — new, visitor data types and utility functions
+- src/app/api/analytics/visitors/route.ts — new, analytics visitors API endpoint
+- src/app/analytics/page.tsx — rewritten, visitors tab with chart and tables (was placeholder)
+- tests/analytics-visitors.test.ts — new, 18 unit tests
+- tests/e2e/analytics-visitors.spec.ts — new, 6 E2E tests
+- package.json — added recharts dependency
+
+### Decisions
+- Used Recharts ComposedChart (Bar + Line overlay) for "Visitors Over Time" — matches Mintlify's interactive SVG chart style
+- Page path from data->>'page' JSONB field, referrer from data->>'referrer' — empty/null referrer defaults to "$direct"
+- Daily counts gap-filled client-side (fillDailyCounts) so chart always shows continuous date axis
+- Project resolved via /api/projects (first project in org) — same pattern as editor page
+- Tables limited to top 20 entries to keep UI clean
+- Agent mode shows dedicated empty state rather than empty chart

@@ -482,5 +482,29 @@
       "Responsive layout at mobile breakpoints",
       "Tab badge counts rendering with real data"
     ]
+  },
+  {
+    "feature_id": "feature-007a",
+    "tests_written": [
+      "formatDateKey formats dates as YYYY-MM-DD",
+      "generateDateRange produces correct date arrays including cross-month",
+      "fillDailyCounts fills missing dates with zero counts",
+      "truncatePath truncates long paths with ellipsis",
+      "formatChartDate shows short month + day",
+      "E2E: renders Visitors Over Time heading",
+      "E2E: shows chart or empty state",
+      "E2E: shows Top pages and Referrals tables",
+      "E2E: Agents mode shows empty state",
+      "E2E: date picker shows presets"
+    ],
+    "needs_deeper_qa": [
+      "Chart interactivity (hover tooltips) with real data",
+      "Large dataset performance (hundreds of daily entries)",
+      "Page path tooltip shows full path on hover",
+      "Tables sort correctly by views desc with real DB data",
+      "Date range changes trigger API refetch and chart update",
+      "Referral grouping edge cases (empty referrer → $direct)",
+      "Concurrent date range changes while data is loading"
+    ]
   }
 ]
