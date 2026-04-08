@@ -1259,3 +1259,43 @@ Date: 2026-04-09
 - Follow-up messages get an immediate simulated agent reply — in production would be async
 - Access control: verify user is member of org that owns the project
 - Auto-refresh uses setInterval with cleanup, only when active jobs exist to avoid unnecessary polling
+
+## Iteration 23 — feature-015: Interactive API Playground
+Date: 2026-04-09
+
+### What was built
+- OpenAPI 3.x spec parser (`src/lib/openapi-parser.ts`) — extracts endpoints, parameters (path/query), request bodies, auth schemes, server base URLs from OpenAPI spec objects
+- Example JSON generator from JSON Schema — auto-populates request body textarea with typed example values (string, integer, email format, etc.)
+- API playground HTML renderer — generates interactive HTML for each endpoint: method badge (color-coded GET/POST/PUT/DELETE), URL bar, parameter inputs, request body editor, auth header input with bearer pre-fill, Send button, response area with body/headers tabs
+- API playground client component (`src/components/docs/api-playground.tsx`) — wires Send button click handlers, collects parameters from inputs, builds URL with path/query params, sends request via proxy, displays response with status code, timing, formatted body/headers, tab switching
+- API proxy route (`POST /api/docs/proxy`) — forwards playground requests to external APIs to avoid CORS; includes SSRF protection (blocks localhost, 127.0.0.1, private IPs, .internal/.local domains); strips host/origin/referer headers
+- Docs page integration — API reference pages (path starts with `api-reference`) auto-render playground when project settings contain `openApiSpec`; endpoint matching via page frontmatter `api` field (e.g., `api: "GET /users/{id}"`)
+- MDX `<ApiPlayground>` component support — renders marker div for custom playground placement in MDX content
+- Updated `validateUpdateProjectRequest` to accept `settings` JSONB field for storing OpenAPI spec in project settings
+- Comprehensive CSS styles matching Mintlify dark theme — method badges, parameter inputs, body textarea, send button (green), response area with status code coloring (2xx green, 4xx amber, 5xx red), response tabs, light theme overrides
+
+### Test results
+- 20 new unit tests (api-playground.test.ts) — all passing
+- 5 new E2E tests (api-playground.spec.ts) — written, QA will verify
+- 674 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/openapi-parser.ts — new, OpenAPI spec parser + HTML renderer
+- src/components/docs/api-playground.tsx — new, client-side playground interactivity
+- src/app/api/docs/proxy/route.ts — new, CORS proxy with SSRF protection
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, API playground integration
+- src/lib/mdx-renderer.ts — updated, added ApiPlayground component
+- src/lib/projects.ts — updated, settings field in update validation
+- src/app/globals.css — updated, API playground styles
+- tests/api-playground.test.ts — new, 20 unit tests
+- tests/e2e/api-playground.spec.ts — new, 5 E2E tests
+
+### Decisions
+- OpenAPI spec stored in project settings JSONB field (`settings.openApiSpec`) — flexible, no schema migration needed
+- CORS proxy approach instead of client-side fetch — avoids browser CORS restrictions for external APIs
+- SSRF protection blocks all private/internal addresses — security best practice for server-side proxy
+- Endpoint matching via frontmatter `api` field — allows per-page endpoint specification matching Mintlify's pattern
+- Custom MDX parser (no external OpenAPI library) — keeps bundle small, handles common OpenAPI 3.x patterns
+- Response area hidden by default, shown only after Send — clean initial state
+- Light theme overrides for all playground elements — consistent with existing docs theme system

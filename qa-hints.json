@@ -788,5 +788,33 @@
       "PR link opens in new tab correctly",
       "Message scroll-to-bottom on new messages"
     ]
+  },
+  {
+    "feature_id": "feature-015",
+    "tests_written": [
+      "parses endpoints from OpenAPI 3.x spec",
+      "extracts query/path parameters with types and defaults",
+      "extracts request body schema for POST/PUT",
+      "extracts server base URL and auth scheme",
+      "renders method badges with correct colors",
+      "renders parameter inputs for path and query params",
+      "renders request body editor with example JSON",
+      "renders auth header input with bearer pre-fill",
+      "renders Send button and response area",
+      "proxy blocks localhost/internal addresses (SSRF protection)",
+      "proxy rejects invalid URLs",
+      "proxy forwards valid external requests"
+    ],
+    "needs_deeper_qa": [
+      "Real API playground interaction — click Send, verify response renders",
+      "OpenAPI spec stored in project settings — upload/paste flow via settings UI",
+      "API reference page detection — pages under api-reference/ with frontmatter api field",
+      "Response tab switching (body vs headers)",
+      "Large response body handling and formatting",
+      "Auth header pre-fill with actual token from project settings",
+      "Concurrent requests — multiple Send clicks",
+      "Error states — network failures, timeouts, malformed responses",
+      "Light theme visual correctness for all playground elements"
+    ]
   }
 ]
