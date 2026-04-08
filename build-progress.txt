@@ -1666,3 +1666,59 @@ Date: 2026-04-09
 - Mapped template triggers (on_merge, on_schedule, on_commit, on_file_change) to simplified DB enum (on_pr_merge, on_schedule) matching the 2-option UI
 - triggerConfig is a JSON column that holds different shapes depending on trigger type (repos array for PR merge, frequency/time for schedule)
 - No actual Slack or GitHub integration — toggles and repo selector are UI-ready but show placeholders
+
+## Iteration 33 — settings-001: Settings Layout Shell
+Date: 2026-04-09
+
+### What was built
+- Settings nav config utility (`src/lib/settings-nav.ts`) with 5 grouped nav sections: Project Settings (4 items), Deployment (2 items), Security & Access (1 item), Workspace (2 items), Advanced (2 items)
+- SettingsSidebar client component (`src/components/settings/settings-sidebar.tsx`) — left sidebar with grouped section headings, icon + label nav links, active item highlighting via `data-active` attribute and white bg
+- Settings layout (`src/app/settings/layout.tsx`) — DashboardShell wrapper with flex row: sidebar + main content area
+- Settings index page (`src/app/settings/page.tsx`) — server-side redirect to `/settings/project/general`
+- Placeholder component (`src/components/settings/settings-placeholder.tsx`) — reusable "coming soon" placeholder for stub pages
+- 8 placeholder pages: domain, authentication, addons, git, github, profile, exports, danger zone
+- Migrated existing pages to new URL structure: deployment/general → project/general, organization/api-keys → security/api-keys, organization/members → workspace/members
+- Updated internal links in dashboard.ts, top-bar.tsx, trial-banner.tsx to use new routes
+- Updated existing unit tests (dashboard.test.ts, dashboard-layout.test.ts) for new paths
+- Updated smoke test to use new api-keys path
+
+### Test results
+- 19 new unit tests (settings-nav.test.ts) — all passing
+- 6 new E2E tests (settings-layout.spec.ts) — written, QA will verify
+- 903 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/settings-nav.ts — new, nav config with groups, items, active detection
+- src/components/settings/settings-sidebar.tsx — new, sidebar client component
+- src/components/settings/settings-placeholder.tsx — new, placeholder component
+- src/app/settings/layout.tsx — updated, added sidebar + flex layout
+- src/app/settings/page.tsx — new, redirect to default settings page
+- src/app/settings/project/general/page.tsx — copied from deployment/general
+- src/app/settings/project/domain/page.tsx — new placeholder
+- src/app/settings/project/authentication/page.tsx — new placeholder
+- src/app/settings/project/addons/page.tsx — new placeholder
+- src/app/settings/deployment/git/page.tsx — new placeholder
+- src/app/settings/deployment/github/page.tsx — new placeholder
+- src/app/settings/security/api-keys/page.tsx — copied from organization/api-keys
+- src/app/settings/workspace/members/page.tsx — copied from organization/members
+- src/app/settings/workspace/profile/page.tsx — new placeholder
+- src/app/settings/advanced/exports/page.tsx — new placeholder
+- src/app/settings/advanced/danger/page.tsx — new placeholder
+- src/lib/dashboard.ts — updated href to /settings/project/general
+- src/components/layout/top-bar.tsx — updated member/billing links
+- src/components/layout/trial-banner.tsx — updated billing link
+- tests/settings-nav.test.ts — new, 19 unit tests
+- tests/e2e/settings-layout.spec.ts — new, 6 E2E tests
+- tests/dashboard.test.ts — updated path assertions
+- tests/dashboard-layout.test.ts — updated path assertions
+- tests/e2e/smoke.spec.ts — updated settings path
+- prd.json — settings-001 build_pass set to true
+- qa-hints.json — added settings-001 QA hints
+
+### Decisions
+- Used new URL structure /settings/{group}/{page} matching Mintlify's sidebar organization
+- Kept old route files in place (backwards compat) alongside new routes
+- Used GitFork icon for GitHub app since lucide-react has no Github icon
+- Billing links redirect to /settings (which redirects to general) since billing is out of scope
+- Placeholder pages use a shared component with breadcrumb + "coming soon" message

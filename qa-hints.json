@@ -1036,5 +1036,28 @@
       "Slack notification toggle — no actual Slack integration yet",
       "Auto-merge toggle state persisted correctly in DB"
     ]
+  },
+  {
+    "feature_id": "settings-001",
+    "tests_written": [
+      "SETTINGS_NAV has 5 groups with correct headings",
+      "All items have label, href, icon",
+      "All hrefs are unique",
+      "isActiveSettingsItem matches exact and sub-paths",
+      "findActiveSettingsItem returns correct item or null",
+      "Settings index redirects to project/general (E2E)",
+      "Sidebar visible with all groups (E2E)",
+      "Active nav item highlighted (E2E)",
+      "Clicking nav item navigates to correct page (E2E)",
+      "Placeholder pages render coming soon message (E2E)",
+      "All nav items lead to valid pages (E2E)"
+    ],
+    "needs_deeper_qa": [
+      "Sidebar scroll behavior when page content is very tall",
+      "Mobile/responsive layout — sidebar may need to collapse on small screens",
+      "Keyboard navigation through sidebar nav items",
+      "Visual match to Mintlify settings sidebar (icon alignment, spacing, colors)",
+      "Old routes (/settings/organization/*, /settings/deployment/general) — verify no broken links from external sources"
+    ]
   }
 ]
