@@ -67,3 +67,33 @@
 - Iteration 3+: Deep-dive into each page/feature one at a time
 - Start with Home page (detailed interaction testing)
 - Then Editor, Analytics, Settings sub-pages, Agents sub-pages
+
+## Iteration 3 — Home Page Deep Dive (2026-04-08)
+
+### What was done:
+- Inspected Home (dashboard root) page thoroughly with Ever CLI
+- Tested "Things to do" expandable section — shows onboarding checklist with setup tasks
+- Tested Activity table — clicked deployment row to expand, revealing full deployment details:
+  - Left column: success message with live URL, commit details (source ref + SHA linking to GitHub), files changed list
+  - Right column: Step-by-step deployment log with green checkmarks
+- Tested "Previews" tab — different table layout with Branch column, "Create custom preview" button
+- Triggered a manual deployment via deploy button — observed status change from "Updating" → "Successful"
+- Tested org switcher dropdown — shows current org with checkmark + "New documentation" option
+- Tested profile menu — name+email, profile/invite/billing links, theme toggle (System/Light/Dark), docs link, support, logout
+- Tested search modal — Cmd+K opens full overlay with "What are you looking for?..." input
+- Confirmed notifications inbox — slide-over panel with filter, empty state
+- Took 8 screenshots of Home page states
+- Updated build-spec.md with detailed Home page spec, confirmed colors and typography
+
+### Key findings:
+- Project card has 3 action buttons: Edit (→ editor), Deploy (triggers update), Visit site (→ docs site)
+- Activity table rows are expandable accordions showing deployment details + build log
+- Deployment log shows ~25 discrete steps (permissions, config validation, file fetching, navigation update, search indexing, page revalidation, cache update)
+- "Things to do" is an onboarding checklist — items include "Make an update" and "Add custom domain"
+- Previews tab shows branch-based preview deployments with different table columns
+- Deploy triggers immediately update the UI — status badge changes in real-time from "Updating" to "Successful"
+- Status badges: "Live" (green), "Updating" (orange), "Successful" (green), "Failed" (red)
+
+### What's next:
+- Iteration 4: Editor page deep dive — test visual/markdown modes, file tree, toolbar, publish, comments
+- Then: Analytics, Settings sub-pages, Agents sub-pages

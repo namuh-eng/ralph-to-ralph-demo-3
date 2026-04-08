@@ -87,19 +87,26 @@ Docs site: `{projectSlug}.mintlify.app/...`
 - **Org switcher**: Current org dropdown + "New documentation" option
 - **Notifications inbox**: Slide-over with filter, empty state
 
-## Design System (partial — needs screenshot inspection)
+## Design System (partial — updated with Home page inspection)
 
-### Colors (from Mintlify branding — to be confirmed via UI)
-- Primary: Green (#0D9373 or similar)
-- Background light: White (#FFFFFF)
-- Background dark: Dark gray/black
-- Text: Near-black for light, near-white for dark
-- Accent: Varies by theme config
+### Colors (confirmed from dark mode UI)
+- Primary/Brand: Green (#0D9373 / similar — used for "Live" badge, success states, active nav items, checkmarks)
+- Success: Green (same as primary — deployment "Successful" badge)
+- Warning/Updating: Orange/amber — used for "Updating" status badge
+- Error/Failed: Red — used for "Failed" status badge
+- Background dark: Very dark gray (#0f0f0f or similar)
+- Surface dark: Slightly lighter gray (#1a1a1a) — card backgrounds, sidebar
+- Surface elevated: Medium gray (#2a2a2a) — activity table rows, inputs
+- Text primary: White/near-white
+- Text secondary: Gray (#888 or similar) — timestamps, descriptions
+- Accent: Orange — trial banner warning
+- Badge backgrounds: Semi-transparent colored fills with matching text
 
-### Typography (to be confirmed)
-- Headings: Inter or similar sans-serif
-- Body: Inter or similar
-- Code: JetBrains Mono or Fira Code
+### Typography (confirmed)
+- Headings: Sans-serif (Inter or system font), normal weight for greeting, medium for section titles
+- Body: Same sans-serif, regular weight
+- Code: Monospace — commit SHAs, file paths
+- Timestamps: Relative format ("3 days ago", "just now") with absolute tooltip
 
 ### Layout (verified)
 - **Dashboard**: Fixed sidebar (~240px) + scrollable main content. Sidebar has org switcher, nav groups, collapse button. Top bar has search, notifications, chat, profile.
@@ -117,6 +124,66 @@ Docs site: `{projectSlug}.mintlify.app/...`
 - Form inputs with validation
 - Code editor (Monaco/CodeMirror for MDX)
 - Markdown/MDX renderer
+- Status badges (Live/Updating/Successful/Failed — colored pill badges)
+- Expandable/collapsible sections (accordion pattern — "Things to do", deployment rows)
+- Tab switcher (pill-style tabs — "Live" / "Previews")
+- Org switcher dropdown (sidebar header)
+- Profile menu dropdown (avatar → menu items)
+- Search modal (Cmd+K, full overlay with text input)
+- Site preview thumbnail card (with status overlay during deploys)
+
+## Page Deep Dives
+
+### Home Page (Dashboard Root) — COMPLETE
+**URL**: `/{org}/{project}`
+**Layout**: Full-width content area with greeting header, project card, activity section
+
+#### Sections (top to bottom):
+1. **Trial banner** (top): Yellow/amber banner — "Your team is on a free trial. Trial ends on {date}." + "Explore upgrades" link → billing settings
+2. **Greeting**: "Good {timeOfDay}, {firstName}" — dynamically changes based on time
+3. **"Things to do" dropdown** (top-right): Collapsible accordion with onboarding checklist
+   - Header: "Things to do" with expand/collapse arrow
+   - Expanded shows: "Complete your setup — Here are the remaining todos"
+   - Checklist items with arrows: "Make an update", "Add custom domain"
+   - Each item is clickable → navigates to relevant page
+4. **Project card**: Left side = site preview thumbnail (auto-generated screenshot of live site), Right side = info
+   - Project name ("Mint Starter Kit")
+   - Status badge: "Live" (green), "Updating" (orange)
+   - Last update info: "Initializing Project · 3 days ago" or "Last updated just now by Manual Update"
+   - **3 action buttons** (icon row):
+     - Edit (pencil icon) → navigates to `/editor/main`
+     - Deploy (circular arrow icon, type=submit) → triggers manual deployment, changes status to "Updating"
+     - "Visit site" (with icon) → opens docs site in new tab
+5. **Domain section**:
+   - Subdomain link: `{project}.mintlify.app` (clickable, opens in new tab with external link icon)
+   - "Add custom domain" link → navigates to settings
+6. **Activity section**:
+   - Tab switcher: "Live" | "Previews" (pill-style buttons)
+   - **Live tab**: Table with columns: Update, Status, Changes
+     - Each row: deployment icon + name + relative timestamp | status badge (Successful/Updating/Failed) | commit message + file count
+     - Rows are **expandable** (click chevron to expand)
+     - **Expanded row** shows two columns:
+       - Left: "Update successful" + live URL link, "Commit details" (source ref link, commit SHA link), "Files changed" (list of file paths, each linking to GitHub commit)
+       - Right: "Deployment log" — sequential step-by-step log with green checkmarks for each step
+     - Deployment log steps include: Verified permissions, Fetching config, Validating docs.json, Fetching files, Updating paths, Saving config, Navigation update, Search indexing, Page revalidation, Cache update
+   - **Previews tab**: Table with columns: Update, Branch, Status, Changes
+     - "+ Create custom preview" button at top
+     - Shows preview deployments from branches
+     - Rows same expandable pattern as Live tab
+
+#### Behaviors observed:
+- Triggering deploy: Click deploy button → status instantly changes to "Updating" → new activity row appears at top → status updates to "Successful" after ~30s
+- Time display: Relative format ("3 days ago", "just now") with absolute date in title tooltip
+- Project thumbnail: Shows auto-generated screenshot of the live docs site, overlaid with "Updating" spinner during deploys
+- Deployment expand: Accordion-style with chevron animation
+- Files changed links: Each links to the specific commit on GitHub
+- Commit details: Source shows branch, commit shows abbreviated SHA — both link to GitHub
+
+#### Global UI (confirmed from Home page):
+- **Org switcher**: Sidebar header button → dropdown with: current org (checkmark), "+ New documentation"
+- **Profile menu**: Avatar button (top-right) → dropdown with: name+email, Your profile, Invite members, Billing, Theme (System/Light/Dark toggle buttons), Documentation, Contact support, Log Out
+- **Search modal**: Cmd+K or search button → full overlay with "What are you looking for?..." input + ESC button
+- **Notifications inbox**: Bell icon → slide-over panel from right: filter button, more options, "No notifications yet" empty state
 
 ## Data Models
 
