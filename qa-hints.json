@@ -230,5 +230,37 @@
       "Large MDX content — performance of textarea with very long content",
       "File list view vs Navigation view — both should select and display the same page"
     ]
+  },
+  {
+    "feature_id": "feature-003",
+    "tests_written": [
+      "extractFrontmatter parses valid frontmatter, handles missing/unclosed/quoted values",
+      "serializeFrontmatter serializes with body, skips empty values, quotes special chars",
+      "countLines counts single/multiple lines, empty string",
+      "generateLineNumbers produces correct array",
+      "extractToc extracts headings with levels and sanitized IDs",
+      "createAutoSave debounces, cancels, and flushes correctly",
+      "mdxSnippets has all required component snippets",
+      "insertSnippetAtCursor inserts at beginning/middle/end with correct newlines",
+      "E2E: editor renders toolbar with Visual/Markdown mode toggle",
+      "E2E: defaults to visual mode",
+      "E2E: switches between visual and markdown modes",
+      "E2E: markdown editor shows line numbers",
+      "E2E: publish button shows popover with site URL",
+      "E2E: toolbar has formatting buttons (bold, italic, heading)",
+      "E2E: add-new dropdown shows component options"
+    ],
+    "needs_deeper_qa": [
+      "Visual mode WYSIWYG — verify Tiptap renders headings/bold/italic/links correctly",
+      "Mode toggle preserves content — switch visual→markdown→visual without data loss",
+      "Auto-save with 2s debounce — verify content persists to DB after typing stops",
+      "Toolbar formatting in visual mode — bold/italic/heading toggle Tiptap marks",
+      "Page settings panel — save title/slug/description changes via API",
+      "Table of contents — extracted from headings, updates on content change",
+      "Add new dropdown — insert Tab/Dropdown/Anchor/Card/Columns snippets at cursor",
+      "Markdown line numbers — scroll sync between gutter and textarea",
+      "Large document performance — visual editor with 500+ lines",
+      "MDX component rendering in visual mode — Card, Note, Tab components"
+    ]
   }
 ]

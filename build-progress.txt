@@ -360,3 +360,44 @@ Date: 2026-04-08
 - Folders inferred from path segments, sorted before files alphabetically
 - Content editing via plain textarea — rich MDX editor planned for later feature
 - Project resolved from first project in user's org (single-project-active model)
+
+## Iteration 10 — feature-003: Dual-mode MDX Editor
+Date: 2026-04-08
+
+### What was built
+- Editor utility library (`src/lib/editor.ts`) with frontmatter extraction/serialization, line number generation, TOC extraction, auto-save with debounce, MDX component snippets, and cursor-aware snippet insertion
+- Visual editor component (`src/components/editor/visual-editor.tsx`) — Tiptap/ProseMirror WYSIWYG with StarterKit, CodeBlock, Link, Underline, Placeholder extensions. Markdown↔HTML conversion for round-trip editing. Prose styles with dark theme (emerald accents)
+- Markdown editor component (`src/components/editor/markdown-editor.tsx`) — code editor with line number gutter, scroll sync, Tab key handling (inserts spaces), emerald-tinted syntax coloring
+- Editor toolbar component (`src/components/editor/editor-toolbar.tsx`) — Visual/Markdown mode toggle tabs, undo/redo, branch selector (main), formatting buttons (bold, italic, heading, link, image, code block), "Add new" dropdown (Tab, Dropdown, Anchor, Card, Columns), search, page settings gear, preview link, Publish button with Radix Popover showing site URL, auto-save status indicator
+- Page settings panel (`src/components/editor/page-settings-panel.tsx`) — slide-in right panel with Title, Slug, External URL, Description, Sidebar title, OG Image URL, Tag toggle, Hidden toggle, Mode selector — matches Mintlify's page settings UI
+- Table of contents panel (`src/components/editor/toc-panel.tsx`) — auto-extracted from headings, shows "On this page" with indented heading levels
+- Rewrote main editor page (`src/app/editor/main/page.tsx`) — 3-panel layout (left nav/files tree + center dual-mode editor + right TOC/settings), auto-save with 2s debounce, mode toggle preserves content, toolbar formatting inserts at cursor position
+
+### Test results
+- 27 new unit tests (editor.test.ts) — all passing
+- 7 new E2E tests (editor-dual-mode.spec.ts) — written, QA will verify
+- 221 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/editor.ts — new, editor utilities (frontmatter, TOC, auto-save, snippets)
+- src/components/editor/visual-editor.tsx — new, Tiptap WYSIWYG visual editor
+- src/components/editor/markdown-editor.tsx — new, line-numbered markdown editor
+- src/components/editor/editor-toolbar.tsx — new, toolbar with mode toggle, formatting, publish
+- src/components/editor/page-settings-panel.tsx — new, page settings side panel
+- src/components/editor/toc-panel.tsx — new, table of contents panel
+- src/app/editor/main/page.tsx — rewritten, dual-mode editor with 3-panel layout
+- tests/editor.test.ts — new, 27 unit tests
+- tests/e2e/editor-dual-mode.spec.ts — new, 7 E2E tests
+- package.json — added @tiptap/react, @tiptap/starter-kit, @tiptap/pm, @tiptap/extension-* (placeholder, link, code-block, image, underline)
+
+### Decisions
+- Used Tiptap (ProseMirror) for visual WYSIWYG — best-in-class contenteditable editor with extension system
+- Simple markdown↔HTML converters for round-trip between modes — covers headings, bold, italic, code, links, paragraphs
+- Auto-save with 2s debounce — saves after user stops typing, with manual save button as backup
+- Toolbar formatting in markdown mode inserts raw markdown at cursor; in visual mode defers to Tiptap commands
+- Page settings panel shows on right side when gear icon clicked, replacing TOC panel
+- TOC auto-extracted from heading lines in content, shown on right when settings panel is closed
+- MDX component snippets (Tab, Dropdown, Anchor, Card, Columns) match Mintlify's "Add new" dropdown
+- Branch selector is static "main" for now — git branching feature planned for later
+- Publish popover uses Radix Popover component for accessibility
