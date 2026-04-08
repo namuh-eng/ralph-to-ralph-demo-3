@@ -907,5 +907,29 @@
       "Agent visitors vs MCP searches tabs both show on both sub-pages",
       "Tab active state styling matches when on MCP Searches page"
     ]
+  },
+  {
+    "feature_id": "feature-011",
+    "tests_written": [
+      "isValidHexColor accepts/rejects various hex color formats",
+      "mergeAppearance merges partial settings with defaults",
+      "validateAppearance rejects invalid colors and dark mode values",
+      "buildAssetFilename builds correct filenames per asset type",
+      "DEFAULT_APPEARANCE has expected default values",
+      "E2E: page renders all sections (colors, dark mode, logos, favicon, save button)",
+      "E2E: color input shows hex value with preview",
+      "E2E: dark mode selector has three options",
+      "E2E: logo upload dropzones are visible",
+      "E2E: save triggers API call and shows success message"
+    ],
+    "needs_deeper_qa": [
+      "Actual S3 upload flow — presigned URL + PUT upload — only mocked in unit tests",
+      "Logo/favicon preview after upload — needs real S3 presigned GET URL",
+      "Color picker native input behavior varies across browsers",
+      "Dark mode toggle persistence — does it reload correctly after save?",
+      "Very large image uploads (near 50MB limit)",
+      "SVG upload security — XSS vectors in SVG files",
+      "Settings merge when project already has other settings — verify no data loss"
+    ]
   }
 ]

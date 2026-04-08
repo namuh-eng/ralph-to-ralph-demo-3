@@ -1471,3 +1471,42 @@ Date: 2026-04-09
 - Both agent sub-pages render their own AgentStatsBar (no shared component needed — DRY not worth the coupling for 2 pages)
 - Empty state messages are exported constants so they can be tested and referenced consistently
 - MCP Searches page uses lucide Search icon; Agent Visitors keeps the inline SVG people icon from previous iteration
+
+## Iteration 28 — feature-011: Project Appearance Settings
+Date: 2026-04-09
+
+### What was built
+- Appearance settings page at `/settings/appearance` with:
+  - Color pickers for primary and background colors (hex input + native color picker + live preview swatch)
+  - Dark mode selector with three options: Light, Dark, System (button group with icons)
+  - Logo upload dropzones for light and dark variants (drag & drop + click to browse)
+  - Favicon upload dropzone
+  - Live preview panel showing primary/background color
+  - Save button that persists to project.settings.appearance via PUT /api/projects/[id]
+- Shared utility module `src/lib/appearance.ts` with:
+  - AppearanceSettings interface and DEFAULT_APPEARANCE constants
+  - isValidHexColor, mergeAppearance, validateAppearance, buildAssetFilename helpers
+- File uploads use existing presigned URL flow (POST /api/uploads/presign → S3 PUT)
+- Uploaded assets stored with deterministic filenames: logo-light.ext, logo-dark.ext, favicon.ext
+
+### Test results
+- 15 new unit tests (appearance-settings.test.ts) — all passing
+- 5 new E2E tests (appearance-settings.spec.ts) — written, QA will verify
+- 800 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/appearance.ts — new, shared appearance settings types + validation
+- src/app/settings/appearance/page.tsx — new, full appearance settings page
+- tests/appearance-settings.test.ts — new, 15 unit tests
+- tests/e2e/appearance-settings.spec.ts — new, 5 E2E tests
+- prd.json — feature-011 build_pass set to true
+- qa-hints.json — appended QA hints for feature-011
+
+### Decisions
+- Used project.settings.appearance JSONB field to store all appearance config
+- Merges with DEFAULT_APPEARANCE on load so missing fields get sensible defaults
+- Color validation requires full 6-digit hex (#RRGGBB) — no shorthand
+- File upload dropzones use existing /api/uploads/presign flow, no new API routes needed
+- Dark mode stored as "light" | "dark" | "system" string enum
+- A11y: file upload zones use <button> elements, labels have htmlFor attributes
