@@ -421,5 +421,25 @@
       "Light theme styles for all new topbar elements",
       "Dashboard button navigation — verify it reaches authenticated dashboard"
     ]
+  },
+  {
+    "feature_id": "api-001",
+    "tests_written": [
+      "extractBearerToken parses valid/invalid Authorization headers",
+      "validateProjectId accepts UUIDs and rejects invalid formats",
+      "formatDeploymentTriggerResponse returns statusId + status",
+      "formatDeploymentStatusResponse returns full deployment info or null",
+      "POST /api/v1/project/update/{projectId} returns 401 without auth",
+      "POST /api/v1/project/update/{projectId} returns 401 with invalid key",
+      "POST /api/v1/project/update/{projectId} returns 400 with invalid projectId",
+      "GET /api/v1/project/update-status/{statusId} returns 401 without auth"
+    ],
+    "needs_deeper_qa": [
+      "End-to-end trigger + status check with real API key and project",
+      "Rate limiting not implemented yet — needs QA to verify behavior under load",
+      "Simulated build completion timing — verify status transitions (queued → in_progress → succeeded)",
+      "Cross-org access control — verify key from org A cannot trigger deployments for org B projects",
+      "Assistant key type should be rejected (403) — not tested E2E"
+    ]
   }
 ]

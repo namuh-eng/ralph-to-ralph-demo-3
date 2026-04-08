@@ -640,3 +640,39 @@ Date: 2026-04-08
 - Settings prop is optional and defaults to empty object — backwards compatible
 - Dashboard button styled as green pill matching Mintlify's brand accent (#16a34a)
 - Support defaults to mailto:support@example.com when no email configured
+
+## Iteration 7 — api-001: REST API Deployment Endpoints
+Date: 2026-04-08
+
+### What was built
+- Utility module (`src/lib/api-v1-deployments.ts`) — extractBearerToken, validateProjectId, formatDeploymentTriggerResponse, formatDeploymentStatusResponse
+- API key auth module (`src/lib/api-key-auth.ts`) — validates Bearer token against hashed API keys in DB, updates lastUsedAt
+- API route `POST /api/v1/project/update/{projectId}` — trigger deployment via admin API key, returns statusId + status
+- API route `GET /api/v1/project/update-status/{statusId}` — check deployment progress, returns full status info
+- Both routes enforce admin-only API key auth (Bearer token)
+- Project ownership verified: key's org must match project's org
+- Simulated async build (queued → in_progress → succeeded over 3s)
+
+### Test results
+- 12 new unit tests (api-v1-deployments.test.ts) — all passing
+- 5 new E2E tests (api-v1-deployments.spec.ts) — written, QA will verify
+- 371 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/api-v1-deployments.ts — new, request/response formatting utilities
+- src/lib/api-key-auth.ts — new, API key Bearer token authentication
+- src/app/api/v1/project/update/[projectId]/route.ts — new, trigger deployment endpoint
+- src/app/api/v1/project/update-status/[statusId]/route.ts — new, deployment status endpoint
+- tests/api-v1-deployments.test.ts — new, 12 unit tests
+- tests/e2e/api-v1-deployments.spec.ts — new, 5 E2E tests
+- prd.json — api-001 build_pass set to true
+- qa-hints.json — added api-001 QA hints
+
+### Decisions
+- Validate projectId format (UUID) before auth to give clear 400 errors
+- Only admin keys can trigger deployments (assistant keys get 403)
+- Cross-org isolation: project must belong to the API key's org
+- Reused existing hashApiKey/verifyApiKey from api-keys.ts for key lookup
+- lastUsedAt updated fire-and-forget on successful auth (non-blocking)
+- Build simulation matches existing dashboard deployment flow (3s completion)
