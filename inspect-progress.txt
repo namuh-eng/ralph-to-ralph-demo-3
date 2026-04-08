@@ -165,5 +165,52 @@
 - Date picker has both calendar grid and preset shortcuts in a single dialog
 
 ### What's next:
-- Iteration 6: Settings pages deep dive — start with the 12 settings sub-pages
+- Iteration 6: Settings pages deep dive — all 12 settings sub-pages
 - Then: Agents sub-pages (Agent, Assistant, Workflows, MCP)
+
+## Iteration 6 — Settings Pages Deep Dive (2026-04-08)
+
+### What was done:
+- Navigated to all 12 settings sub-pages and inspected each with Ever CLI
+- Tested interactive elements: invite member modal, toggle switches, form inputs
+- Took 11 screenshots across all settings pages
+
+### Settings pages inspected:
+
+1. **Domain setup** (`/settings/deployment/custom-domain`): Custom domain input with https:// prefix, subdomain/subpath toggle switch, "Add domain" button. DNS verification flow.
+
+2. **Authentication** (`/settings/deployment/authentication`): Docs-site auth (NOT dashboard auth). "Contact sales" for full auth. JWT config section: example token, Issuer URL, Audience field. User cache duration (24 hours).
+
+3. **Add-ons** (`/settings/deployment/addons`): 3 sections — Feedback (5 toggle/checkbox options: thumbs rating, edit suggestions, raise issues, contextual feedback, code snippet feedback), CI/CD checks (broken links + grammar linter, both dropdown Disabled/Enabled), Previews (preview deployments enabled, preview auth toggle).
+
+4. **General** (`/settings/deployment/general`): Minimal — single "Deployment name" text input + "Save changes" button.
+
+5. **Git settings** (`/settings/deployment/git-settings`): GitHub section with Clone as public/private + Download ZIP + Install GitHub App buttons. GitLab section with Configure + Switch buttons.
+
+6. **GitHub app** (`/settings/organization/github-app`): "Enable auto updates" heading, active connections list (empty), "Install the GitHub app" button.
+
+7. **API keys** (`/settings/organization/api-keys`): Project ID (read-only + copy). Admin API keys ("Available on Pro" gated) with create button. Assistant API keys with create button. Warning: "copy keys once generated, cannot see again."
+
+8. **Members** (`/settings/organization/members`): Team members table (email + date joined), search input, "Invite member" button → dialog with email input (comma/space separated) + "Send Invite" button. 1 active member shown.
+
+9. **Billing** (`/settings/organization/billing`): OUT OF SCOPE. Shows trial status, plan comparison (Hobby $0/Pro $250/mo), yearly billing toggle, feature lists per plan.
+
+10. **My profile** (`/settings/account`): First/last name inputs + save. Email notification toggle (comment reply emails). GitHub authorization status + Authorize button.
+
+11. **Exports** (`/settings/deployment/export-docs`): Enterprise-gated. "Export all content" button for PDF export.
+
+12. **Danger zone** (`/settings/organization/danger-zone`): Two sections — Delete deployment (reason textarea + red delete button) and Delete organization (CRITICAL ACTION warning, reason textarea + red delete button). Both irreversible.
+
+### Key findings:
+- Settings pages share consistent layout: left sidebar nav with grouped sections + main content area
+- Many features are plan-gated: Admin API keys (Pro), Full auth (Enterprise), Contextual feedback (sales), Exports (Enterprise)
+- Domain setup shows subpath toggle — can host docs at `/docs` instead of subdomain
+- Authentication page is for docs-site auth (JWT-based), completely separate from dashboard auth (Google OAuth)
+- Git settings shows Mintlify hosts a default repo; users can clone to own GitHub or switch to GitLab
+- Add-ons page controls CI pipeline checks (broken links, grammar) and feedback widgets
+- Profile page includes GitHub OAuth integration (separate from org-level GitHub App)
+- Invite flow supports bulk invites via comma/space-separated emails
+- 6 new PRD entries added (settings-001 through settings-006)
+
+### What's next:
+- Iteration 7: Agents sub-pages deep dive (Agent, Assistant, Workflows, MCP)

@@ -334,6 +334,123 @@ Each tab shows its metric count in a badge (e.g., "Visitors 7", "Views 13", "Fee
 - Page paths show as truncated spans with full path in title tooltip
 - Switching Humans↔Agents changes the entire sub-tab set (not just data filtering)
 
+### Settings Pages — COMPLETE
+**URL**: `/{org}/{project}/settings/...`
+**Layout**: Left sidebar (settings nav groups) + main content area. Same top bar as rest of dashboard.
+
+#### Settings Navigation (left sidebar groups):
+1. **Project Settings**: Domain setup, Authentication, Add-ons, General
+2. **Deployment**: Git settings, GitHub app
+3. **Security & Access**: API keys
+4. **Workspace**: Members, Billing
+5. **Account**: My profile
+6. **Advanced**: Exports, Danger zone
+
+#### Domain Setup (`/settings/deployment/custom-domain`):
+- **Heading**: "Set up your custom domain"
+- **Subpath toggle**: Switch (off by default) for hosting at `/docs` subpath instead of subdomain
+- **Domain input**: Text field with `https://` prefix, placeholder "docs.yourdomain.com"
+- **"Add domain" button**: Submits domain for DNS verification
+- Flow: Enter domain → Add → shows CNAME instructions → verify DNS → TLS auto-provisioned
+
+#### Authentication (`/settings/deployment/authentication`):
+- **Enable Authentication section**: "Contact sales" button + "Learn more" link — gated feature
+- **Setup authentication section**:
+  - "Full authentication" with "Active" badge — gates entire docs with auth + personalization
+  - **JWT config**: Pre-populated example token (`eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...`), Issuer URL, Audience fields
+  - **User cache**: Cache duration setting ("24 hours") — how long sessions cached before re-auth
+- Note: This is docs-site auth (protecting published docs), NOT dashboard auth
+
+#### Add-ons (`/settings/deployment/addons`):
+- **Feedback section**:
+  - Thumbs rating toggle (switch, off)
+  - Edit suggestions checkbox (requires public GitHub repo)
+  - Raise issues checkbox (requires public GitHub repo)
+  - Contextual feedback checkbox (contact sales to enable)
+  - Code snippet feedback checkbox (contact sales to enable)
+- **CI/CD checks section**:
+  - Broken links checker — dropdown (Disabled/Enabled), checks docs for broken links on PR
+  - Grammar linter — dropdown (Disabled/Enabled), Vale-based spell check + grammar
+- **Previews section**:
+  - Preview deployments — "This add-on is currently enabled"
+  - Preview authentication toggle (switch, off) — restrict previews to org members only
+
+#### General (`/settings/deployment/general`):
+- **Project name**: Single text input with label "Deployment name", placeholder "acme", current value "namuh"
+- **Save changes** button
+- Very minimal page — just one field
+
+#### Git Settings (`/settings/deployment/git-settings`):
+- **Repo settings** heading with link to manual GitHub/GitLab setup docs
+- **GitHub section**: Docs currently hosted in Mintlify-owned GitHub org. Options:
+  - "Clone as public" button
+  - "Clone as private" button
+  - "Download as ZIP" button
+  - "Install GitHub App" button (for using own repo)
+- **GitLab section**:
+  - "Configure GitLab" link → GitLab integration docs
+  - "Switch to GitLab" button
+
+#### GitHub App (`/settings/organization/github-app`):
+- **Enable auto updates** heading
+- **"Your active GitHub app connections"** — empty when no GitHub app installed
+- **"Configure GitHub app"** section with description
+- **"Install the GitHub app"** button → redirects to GitHub app install flow
+
+#### API Keys (`/settings/organization/api-keys`):
+- **Project ID** section: Read-only input showing project ID hash, with Copy button
+- **Admin API keys** section:
+  - "Available on Pro" badge — admin keys require paid plan
+  - Link to API docs
+  - "Active admin keys" list (empty by default)
+  - Warning: "Please ensure to copy your API keys once generated as you may not be able to see them again."
+  - "Create Admin API Key" button
+- **Assistant API keys** section:
+  - "Active assistant keys" list
+  - Same copy warning
+  - "Create Assistant API Key" button
+- Key creation flow: Click create → enter name → generate key → show key once → store hashed
+
+#### Members (`/settings/organization/members`):
+- **Header**: "Team members" with member count ("1 active member")
+- **Invite member** button → opens dialog:
+  - Email input with placeholder "name@gmail.com"
+  - Instruction: "Enter email addresses, separated by commas or spaces"
+  - "Send Invite" button
+- **Search** input: "Search members" filter
+- **Members table**: Columns: Member (email), Date joined (formatted "Apr 5, 2026"), Actions (implicit)
+- Table shows avatar/icon + email + join date per row
+
+#### Billing (`/settings/organization/billing`) — OUT OF SCOPE:
+- Shows current plan with trial info
+- Plan comparison cards: Hobby ($0/mo), Pro ($250/mo)
+- Yearly billing toggle (switch, on)
+- Feature lists per plan
+- **Note: Billing/payment is explicitly out of scope for the clone**
+
+#### My Profile (`/settings/account`):
+- **Name section**: "Update your name" — First name + Last name inputs, "Save changes" button
+- **Email notifications section**: "Manage your email notification preferences"
+  - "Comment reply emails" toggle (switch, on) — receive emails when someone replies to comment threads
+- **Integrations section**: "Connect and authorize apps in your workspace"
+  - GitHub authorization — shows "Inactive" status with "Authorize" button → links to GitHub OAuth
+
+#### Exports (`/settings/deployment/export-docs`):
+- **"Available on Enterprise"** badge — feature gated behind Enterprise plan
+- Description: "Export your docs as a single PDF file for offline viewing."
+- **"Export all content"** button (disabled for non-enterprise)
+
+#### Danger Zone (`/settings/organization/danger-zone`):
+- **Delete my deployment** section:
+  - Warning: "Your deployment will be deleted and cannot be restored. This is irreversible."
+  - "Reason for deletion" textarea (placeholder: "Why are you deleting your deployment?")
+  - Red "Delete {projectName}" submit button
+- **Delete my organization** section:
+  - **"CRITICAL ACTION"** warning with bold text
+  - Warning: "This will permanently delete your entire organization, all deployments, team members, and data. This cannot be undone."
+  - "Reason for deletion" textarea
+  - Red "Delete {orgName}" submit button
+
 ## Data Models
 
 ### Organization
