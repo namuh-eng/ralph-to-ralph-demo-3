@@ -396,5 +396,30 @@
       "TOC scroll spy accuracy with many headings",
       "Responsive breakpoints: 768px mobile, 1024px tablet (TOC hides)"
     ]
+  },
+  {
+    "feature_id": "feature-014a",
+    "tests_written": [
+      "DocsTopbar accepts settings prop (with and without)",
+      "buildDashboardUrl returns /dashboard",
+      "buildSupportHref creates mailto link",
+      "getGithubLinkProps returns correct external link props",
+      "getGithubLinkProps returns null for undefined URL",
+      "AskAiButton component exported and dispatches toggle-ask-ai event",
+      "E2E: search button visible with ⌘K",
+      "E2E: Ask AI button visible",
+      "E2E: Support link visible",
+      "E2E: Dashboard button visible",
+      "E2E: Theme toggle switches light/dark",
+      "E2E: Search modal opens on click"
+    ],
+    "needs_deeper_qa": [
+      "Ask AI button integration — currently dispatches event but no AI panel implemented yet",
+      "GitHub link only shows when project settings have githubUrl — test with real project data",
+      "Support mailto link — verify opens email client",
+      "Mobile responsive behavior — search text hides, Ask AI text hides, Support link hides",
+      "Light theme styles for all new topbar elements",
+      "Dashboard button navigation — verify it reaches authenticated dashboard"
+    ]
   }
 ]

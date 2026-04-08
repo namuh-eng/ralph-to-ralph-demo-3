@@ -600,3 +600,43 @@ Date: 2026-04-08
 - Used native <dialog> element for search modal (Biome a11y compliance)
 - Mobile sidebar communicates via CustomEvents (toggle-mobile-sidebar, open-search) to avoid prop drilling between server/client components
 - Responsive breakpoints: 768px (mobile — sidebar hides, hamburger shows), 1024px (tablet — TOC hides)
+
+## Iteration 16 — feature-014a: Docs Site Top Bar
+Date: 2026-04-08
+
+### What was built
+- Enhanced DocsTopbar component (`src/components/docs/docs-topbar.tsx`) with full navigation bar matching Mintlify's design:
+  - Logo + project name on left (existing, kept as-is)
+  - Search button (⌘K) moved to center section alongside new Ask AI button
+  - Ask AI button with sparkle icon — dispatches `toggle-ask-ai` custom event
+  - Support link (mailto) — uses project settings `supportEmail` or default
+  - GitHub icon link — conditionally rendered when `githubUrl` in project settings, opens in new tab
+  - Dashboard button (green) — links to /dashboard with arrow icon
+  - Theme toggle (existing, repositioned to right section)
+  - Mobile hamburger menu (existing, unchanged)
+- Exported helper functions: `buildDashboardUrl`, `buildSupportHref`, `getGithubLinkProps`, `AskAiButton`
+- DocsTopbar now accepts optional `settings` prop from project settings (JSONB)
+- Updated `[...slug]/page.tsx` to pass `project.settings` to DocsTopbar
+- Added CSS for all new elements: dark theme (default), light theme overrides
+- Responsive: on mobile (≤768px), Ask AI text hides, Support link hides, Dashboard button shrinks
+
+### Test results
+- 13 new unit tests (docs-topbar.test.ts) — all passing
+- 6 new E2E tests (docs-topbar.spec.ts) — written, QA will verify
+- 359 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/components/docs/docs-topbar.tsx — enhanced, added Ask AI, Support, GitHub, Dashboard
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, passes settings to DocsTopbar
+- src/app/globals.css — added CSS for topbar-center, ask-ai, link, icon-link, dashboard-btn + light theme + responsive
+- tests/docs-topbar.test.ts — new, 13 unit tests
+- tests/e2e/docs-topbar.spec.ts — new, 6 E2E tests
+
+### Decisions
+- Search + Ask AI grouped in center section (matching Mintlify's layout from screenshot)
+- Ask AI dispatches custom event — actual AI panel will be built in a separate feature
+- GitHub link uses sr-only span for Biome a11y compliance (useAnchorContent rule)
+- Settings prop is optional and defaults to empty object — backwards compatible
+- Dashboard button styled as green pill matching Mintlify's brand accent (#16a34a)
+- Support defaults to mailto:support@example.com when no email configured
