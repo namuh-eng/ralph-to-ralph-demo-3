@@ -981,5 +981,33 @@
       "Light theme styling for the feedback widget",
       "Mobile responsive layout of the widget"
     ]
+  },
+  {
+    "feature_id": "feature-020",
+    "tests_written": [
+      "has exactly 9 templates",
+      "each template has required fields",
+      "all template ids are unique",
+      "includes expected template names",
+      "custom workflow has empty default prompt",
+      "non-custom templates have non-empty prompts",
+      "all triggers are valid values",
+      "getTemplateById returns correct template",
+      "getTemplateById returns undefined for invalid id",
+      "renders page heading",
+      "renders all 9 template cards",
+      "displays template names",
+      "clicking template navigates to creation form",
+      "creation form pre-fills template name",
+      "custom template shows empty prompt",
+      "back link navigates to template picker"
+    ],
+    "needs_deeper_qa": [
+      "Visual match with original Mintlify workflows page layout",
+      "Card hover states and focus styles for accessibility",
+      "Mobile responsive grid (single column on small screens)",
+      "Keyboard navigation through template cards",
+      "URL state preservation when navigating back from creation form"
+    ]
   }
 ]

@@ -1592,3 +1592,40 @@ Date: 2026-04-09
 - Compatible with existing dashboard analytics/feedback page which reads these same events
 - Comment truncated to 2000 chars server-side for safety
 - Toast auto-dismisses after 3 seconds
+
+## Iteration 31 — feature-020: Workflows Template Picker
+Date: 2026-04-09
+
+### What was built
+- Workflow templates data module (`src/lib/workflow-templates.ts`) — 9 hardcoded templates: Changelog, API docs sync, Draft feature docs, Translations, Enforce style guide, Typo check, Broken link detection, SEO & metadata audit, Custom workflow. Each has id, name, description, icon, defaultTrigger, defaultPrompt. Includes `getTemplateById()` lookup function.
+- Workflows template picker page (`/products/workflows`) — server component with auth check + client component:
+  - Breadcrumb trail: Agents / Workflows / New workflow
+  - Header: "What do you want to automate?" with description text
+  - 2-column responsive grid (1 col on mobile) of 9 clickable template cards
+  - Each card: Lucide icon + bold name + description, dark theme with hover effect
+  - Click navigates to `/products/workflows/new?template={id}`
+- Workflow creation form page (`/products/workflows/new`) — pre-fills name, trigger, and prompt from template query param. Includes back link to template picker. Create button disabled (placeholder for future feature).
+- Updated smoke tests to include workflows page
+
+### Test results
+- 10 new unit tests (workflow-templates.test.ts) — all passing
+- 7 new E2E tests (workflows.spec.ts) — written, QA will verify
+- 867 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/workflow-templates.ts — new, template data + types + getTemplateById
+- src/app/products/workflows/page.tsx — new, server component with auth
+- src/app/products/workflows/workflows-page-client.tsx — new, template picker grid
+- src/app/products/workflows/new/page.tsx — new, creation form server component
+- src/app/products/workflows/new/new-workflow-client.tsx — new, form with pre-fill
+- tests/workflow-templates.test.ts — new, 10 unit tests
+- tests/e2e/workflows.spec.ts — new, 7 E2E tests
+- tests/e2e/smoke.spec.ts — updated, added workflows smoke test
+
+### Decisions
+- Used hardcoded template array (not database) per PRD spec — templates are static configuration
+- Lucide icons mapped via string keys matching template.icon field for clean data/UI separation
+- 2-column grid matches Mintlify screenshot layout; collapses to 1 column on mobile
+- Creation form is a placeholder — "Create workflow" button disabled since workflow execution is a separate future feature
+- Template defaults (trigger, prompt) pre-fill form fields via URL query param
