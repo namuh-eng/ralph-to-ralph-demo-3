@@ -719,3 +719,47 @@ Date: 2026-04-08
 - Page context limited to retrievalPageSize (default 5, max 20) with 2000 char per page
 - Conversation persisted fire-and-forget after streaming completes
 - SSE format: data: JSON\n\n with types text-delta, sources, finish, error
+
+## Iteration 9 — feature-007: Analytics Layout Shell
+Date: 2026-04-08
+
+### What was built
+- Analytics utility library (`src/lib/analytics.ts`) with date range presets, traffic source types, tab configs, and formatting helpers
+- 9 date presets: Today, Yesterday, Last 7/14/30/90 days, This month, Year to date, All time
+- Traffic source toggle: Humans (5 tabs: Visitors, Views, Assistant, Searches, Feedback) / Agents (2 tabs: Agent Visitors, MCP Searches)
+- Analytics shell component (`src/app/analytics/analytics-shell.tsx`) — full client component with:
+  - Humans/Agents pill toggle with data-active attribute
+  - Date range picker button showing formatted range → popover with presets sidebar + calendar grid
+  - Calendar with month navigation, day selection (start/end range), today highlight, range highlight
+  - Sub-tab navigation as links with optional count badges
+  - URL preserves trafficSource, from, to as query params
+- Analytics page (`src/app/analytics/page.tsx`) with Suspense wrapper
+- Analytics layout (`src/app/analytics/layout.tsx`) using DashboardShell
+- Middleware updated to protect /analytics routes
+- Smoke tests updated with analytics page load check
+
+### Test results
+- 21 new unit tests (analytics.test.ts) — all passing
+- 7 new E2E tests (analytics.spec.ts) — written, QA will verify
+- 418 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/analytics.ts — new, date presets + traffic source + tab configs + helpers
+- src/app/analytics/layout.tsx — new, DashboardShell wrapper
+- src/app/analytics/page.tsx — new, analytics page with Suspense
+- src/app/analytics/analytics-shell.tsx — new, client component with toggle/picker/tabs
+- src/middleware.ts — updated, added /analytics to protected routes
+- tests/analytics.test.ts — new, 21 unit tests
+- tests/e2e/analytics.spec.ts — new, 7 E2E tests
+- tests/e2e/smoke.spec.ts — updated, added analytics smoke test
+
+### Decisions
+- Date range defaults to "Last 7 days" when no URL params present
+- Traffic source defaults to "human" for any non-"agent" value
+- Calendar grid uses unique date-based keys (year-month-day) to avoid array index keys
+- Popover closes on click-outside using mousedown event listener
+- Tab hrefs preserve existing query params (trafficSource, from, to) when navigating
+- Used emerald-600 for selected date range highlighting, matching Mintlify green accent
+- Sub-tabs use border-bottom-2 active indicator (solid white when active)
+- Switching traffic source resets to /analytics base path (first tab of new mode)
