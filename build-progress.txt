@@ -2326,3 +2326,35 @@ Date: 2026-04-09
 - Preview deployments don't change project status (unlike production deploys which set status to "deploying")
 - No dedup logic for same-branch previews — each creation generates a new deployment record
 - Modal pattern for branch input matches the dark theme design system
+
+## Iteration 50 — feature-022: llms.txt and llms-full.txt Auto-Generation
+Date: 2026-04-09
+
+### What was built
+- Utility module (`src/lib/llms-txt.ts`) with three pure functions:
+  - `buildProjectBaseUrl()` — resolves project's public URL from customDomain/subdomain/slug
+  - `generateLlmsTxt()` — generates llms.txt index with markdown links per page
+  - `generateLlmsFullTxt()` — generates full content dump with page headers, source URLs, and separators
+- Public API route `GET /api/projects/[id]/llms-txt` — returns llms.txt (default) or llms-full.txt (?type=full)
+- No auth required (public endpoints for LLM consumption)
+- Only includes published pages (isPublished=true), ordered by path
+- Responds with text/plain content type and 1-hour cache headers
+- Follows llms.txt spec format: header, description, markdown link list
+
+### Test results
+- 14 new unit tests (llms-txt.test.ts) — all passing
+- 4 new E2E tests (llms-txt.spec.ts) — written, QA will verify
+- 1281 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/llms-txt.ts — new, generation utility functions
+- src/app/api/projects/[id]/llms-txt/route.ts — new, public API route
+- tests/llms-txt.test.ts — new, 14 unit tests
+- tests/e2e/llms-txt.spec.ts — new, 4 E2E tests
+
+### Decisions
+- Single route with ?type=full query param instead of two separate routes — simpler, same pattern
+- Public endpoints (no auth) — llms.txt files are meant for LLM crawlers
+- 1-hour cache (Cache-Control: public, max-age=3600) — reasonable freshness for generated docs
+- Filters by isPublished only — no hidden/authGroup fields exist in schema yet

@@ -1401,5 +1401,28 @@
       "Concurrent preview deployments for the same branch — no dedup logic",
       "Preview cleanup/expiry — previews persist indefinitely"
     ]
+  },
+  {
+    "feature_id": "feature-022",
+    "tests_written": [
+      "buildProjectBaseUrl uses customDomain, subdomain, or slug fallback",
+      "generateLlmsTxt generates header with project name",
+      "generateLlmsTxt generates markdown links for each page",
+      "generateLlmsTxt handles empty pages list",
+      "generateLlmsTxt handles paths without leading slash",
+      "generateLlmsFullTxt includes full content and section headers",
+      "generateLlmsFullTxt includes source URLs",
+      "generateLlmsFullTxt separates pages with horizontal rules",
+      "generateLlmsFullTxt handles null content",
+      "E2E: 404 for non-existent project",
+      "E2E: text/plain content type"
+    ],
+    "needs_deeper_qa": [
+      "Test with real project data — create a project with published pages and verify output format",
+      "Verify caching headers (Cache-Control: public, max-age=3600)",
+      "Large page count performance — test with 100+ pages",
+      "Unicode/special characters in page titles and content",
+      "Verify only published pages are included (unpublished pages should be excluded)"
+    ]
   }
 ]
