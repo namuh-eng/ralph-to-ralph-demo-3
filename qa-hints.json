@@ -1468,5 +1468,29 @@
       "Verify sitemap.xml updates when pages are added/removed/unpublished",
       "Test canonical URL with custom domain if configured"
     ]
+  },
+  {
+    "feature_id": "feature-025",
+    "tests_written": [
+      "defaults customCSS and customJS to empty strings",
+      "mergeDocsConfig preserves customCSS value",
+      "mergeDocsConfig preserves customJS value",
+      "mergeDocsConfig preserves both customCSS and customJS",
+      "validates config with customCSS and customJS",
+      "export/import round-trips customCSS and customJS",
+      "handles multiline CSS",
+      "handles multiline JS with analytics snippet",
+      "E2E: Advanced section shows Custom CSS textarea",
+      "E2E: Advanced section shows Custom JS textarea"
+    ],
+    "needs_deeper_qa": [
+      "Verify custom CSS actually applies styles on docs page in browser",
+      "Verify custom JS executes on docs page (e.g. analytics script)",
+      "Test XSS vectors in custom CSS/JS fields — ensure no admin-side injection",
+      "Test very large CSS/JS payloads (performance impact)",
+      "Verify CSS is injected after default styles (specificity)",
+      "Verify JS is injected at end of body (load order)",
+      "Test save and reload persistence of custom CSS/JS"
+    ]
   }
 ]

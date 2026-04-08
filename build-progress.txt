@@ -2426,3 +2426,34 @@ Date: 2026-04-09
 - noindex pages excluded from sitemap but still accessible by direct URL
 - Cache-Control: 1 hour for sitemap and robots.txt
 - Frontmatter stored as JSONB with ogImage, hidden, noindex, sidebarTitle, externalUrl keys
+
+## Iteration 53 — feature-025: Custom CSS and JavaScript Injection
+Date: 2026-04-09
+
+### What was built
+- Added `customCSS` and `customJS` fields to `AdvancedConfig` type and defaults in docs-config.ts
+- Added Custom CSS textarea and Custom JavaScript textarea to the Advanced section of the Configurations panel (configs-panel.tsx)
+- Each textarea has helper text explaining injection position (CSS in <head>, JS before </body>)
+- Created `CustomCodeInjection` client component that injects custom CSS as a <style> tag in document.head and custom JS as a <script> tag in document.body
+- Integrated `CustomCodeInjection` into the docs slug page (`src/app/docs/[subdomain]/[...slug]/page.tsx`)
+- Data stored in `project.settings.docsConfig.advanced.customCSS` and `.customJS` (JSONB)
+
+### Test results
+- 10 new unit tests (custom-code-injection.test.ts) — all passing
+- 4 new E2E tests (custom-code-injection.spec.ts) — written, QA will verify
+- 1339 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/docs-config.ts — added customCSS, customJS to AdvancedConfig type and defaults
+- src/components/editor/configs-panel.tsx — added Custom CSS and Custom JS textareas in Advanced section
+- src/components/docs/custom-code-injection.tsx — new, client component for CSS/JS injection
+- src/app/docs/[subdomain]/[...slug]/page.tsx — integrated CustomCodeInjection component
+- tests/custom-code-injection.test.ts — new, 10 unit tests
+- tests/e2e/custom-code-injection.spec.ts — new, 4 E2E tests
+
+### Decisions
+- Used client-side injection via useEffect (not SSR dangerouslySetInnerHTML) for safety and proper cleanup
+- CSS injected as <style> tag with data-custom-css attribute for identification
+- JS injected as <script> tag with data-custom-js attribute for identification
+- Both are cleaned up on unmount/change to prevent stale styles/scripts
