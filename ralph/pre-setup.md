@@ -22,9 +22,10 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 - `npm run dev` — dev server on port **3015**
 - `npm run build` — production build
 
-## AWS + Neon Infrastructure (provision with scripts/preflight.sh)
+## AWS Infrastructure (provision with scripts/preflight.sh)
 Run `bash scripts/preflight.sh` before starting the loop. It creates:
-- **Neon Postgres** — database already provisioned, connection string in `.env`
+- **VPC** — private network with 2 subnets across AZs
+- **RDS Postgres 16** — database instance, connection string written to `.env`
 - **S3** — storage bucket with CORS for doc assets
 - **ECR** — Docker image repository
 - **Better Auth** — generates `BETTER_AUTH_SECRET`, sets `BETTER_AUTH_URL`
