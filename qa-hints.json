@@ -1220,5 +1220,20 @@
       "Disabled states for features requiring public GitHub repos or sales contact",
       "Concurrent toggle clicks before save completes"
     ]
+  },
+  {
+    "feature_id": "settings-005",
+    "tests_written": [
+      "name splitting: handles single, double, triple-part names",
+      "name joining: merges first+last with trim",
+      "payload validation: rejects empty firstName, non-string, non-boolean emailNotifications",
+      "E2E: page loads with name inputs, saves name, toggle visible, GitHub section visible, rejects empty first name"
+    ],
+    "needs_deeper_qa": [
+      "GitHub OAuth redirect flow not tested — button is UI-only placeholder",
+      "Email notifications toggle saves to DB — verify persistence across page reloads",
+      "Profile image update not implemented (user table has image field)",
+      "Concurrent save + toggle race condition"
+    ]
   }
 ]

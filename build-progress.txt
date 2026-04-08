@@ -1991,3 +1991,36 @@ Date: 2026-04-09
 - Used mergeAddons() to safely handle missing/partial saved state
 - Toggle switches use role="switch" + aria-checked for accessibility
 - CI check values constrained to "disabled" | "enabled" enum
+
+## Iteration 42 — settings-005: My Profile Settings
+Date: 2026-04-09
+
+### What was built
+- User preferences table (`user_preferences`) with email notifications toggle and GitHub auth fields
+- API route `GET/PATCH /api/users/profile` — fetches user profile with preferences, updates name and notification settings
+- Profile settings page at `/settings/workspace/profile` with:
+  - Name section: first name + last name inputs with Save changes button
+  - Notifications: comment reply emails toggle switch (on by default), optimistic update
+  - Integrations: GitHub authorization status display + Authorize/Disconnect button
+- Name splitting/joining logic: stores as single `name` in user table, splits into first/last for UI
+- Upsert pattern for user preferences (creates if not exists, updates if exists)
+
+### Test results
+- 15 new unit tests (profile-settings.test.ts) — all passing
+- 5 new E2E tests (profile-settings.spec.ts) — written, QA will verify
+- 1068 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Schema pushed to RDS Postgres via make db-push — success
+
+### Files changed
+- src/lib/db/schema.ts — added userPreferences table
+- src/app/api/users/profile/route.ts — new, GET/PATCH profile API
+- src/app/settings/workspace/profile/page.tsx — replaced placeholder with full profile page
+- tests/profile-settings.test.ts — new, 15 unit tests
+- tests/e2e/profile-settings.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Split single `name` column into first/last on UI side rather than adding DB columns (Better Auth manages user table)
+- Created separate `user_preferences` table rather than modifying Better Auth's user table
+- Email notifications toggle uses optimistic update with rollback on failure
+- GitHub authorize button is UI-only — actual OAuth flow deferred to GitHub app integration feature
