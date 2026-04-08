@@ -1162,5 +1162,25 @@
       "Branch and path save via PUT API and reflect after refresh",
       "Error handling when API calls fail"
     ]
+  },
+  {
+    "feature_id": "feature-019a",
+    "tests_written": [
+      "usage progress text formatting (0%, partial, full, overage)",
+      "stats grid values (message range, remaining, billing date, price, overage)",
+      "default usage values (0 messages, 250 limit, zero pricing)",
+      "progress bar percentage edge cases (zero limit, rounding)",
+      "E2E: billing tab displays progress bar with percentage text",
+      "E2E: usage legend shows Used count and Overage Kick In",
+      "E2E: stats grid shows Message Range and Messages Remaining",
+      "E2E: stats grid shows Next Billing, Monthly Price, Overage Spend",
+      "E2E: Spending Controls section with Change Tier button"
+    ],
+    "needs_deeper_qa": [
+      "Visual layout match with original — two-column stats grid alignment",
+      "Progress bar width matches actual percentage under various usage levels",
+      "Billing date formatting across timezones",
+      "Tab switching preserves billing data (no re-fetch flash)"
+    ]
   }
 ]

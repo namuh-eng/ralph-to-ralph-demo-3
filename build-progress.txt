@@ -1896,3 +1896,29 @@ Date: 2026-04-09
 - Clone buttons open GitHub's import page with pre-filled URL — no backend clone logic needed
 - ZIP download constructs GitHub archive URL directly — no proxy needed
 - GitLab "Configure GitLab" links to external Mintlify docs for GitLab integration setup
+
+## Iteration 39 — feature-019a: Assistant Billing Tab
+Date: 2026-04-09
+
+### What was built
+- Enhanced billing tab layout: restructured stats grid from single-column key-value to two-column side-by-side layout matching original Mintlify product
+- Left column: Message Range, Messages Remaining
+- Right column: Next Billing, Monthly Price, Overage Spend
+- Progress bar with percentage text, usage legend with Used count and Overage Kick In indicators
+- All billing data is read-only, sourced from assistant_usage table
+
+### Test results
+- 16 new unit tests (assistant-billing.test.ts) — all passing
+- 5 new E2E tests (assistant-billing.spec.ts) — written, QA will verify
+- 1024 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/app/products/assistant/assistant-settings-client.tsx — restructured billing tab stats grid layout
+- tests/assistant-billing.test.ts — new, 16 unit tests for billing display logic
+- tests/e2e/assistant-billing.spec.ts — new, 5 E2E tests for billing tab UI
+
+### Decisions
+- Matched two-column side-by-side layout from reference screenshot
+- Kept existing progress bar and legend implementation (already matched spec)
+- Billing tab is read-only display — no mutations needed
