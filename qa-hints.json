@@ -1445,5 +1445,28 @@
       "Saving redirects via configs panel and verifying persistence after reload",
       "Edge case: redirect to external URL (currently only supports internal paths)"
     ]
+  },
+  {
+    "feature_id": "feature-024",
+    "tests_written": [
+      "isNoIndex detects noindex frontmatter flag",
+      "isHidden detects hidden frontmatter flag",
+      "getOgImage extracts OG image URL from frontmatter",
+      "buildCanonicalUrl builds correct canonical URL",
+      "generateSitemapEntries excludes noindex and unpublished pages",
+      "renderSitemapXml generates valid XML with entries",
+      "generateRobotsTxt allows/disallows crawling",
+      "buildPageMetadata builds title, description, canonical, ogImage, noindex",
+      "sitemap.xml route returns XML with cache headers",
+      "robots.txt route returns text with cache headers"
+    ],
+    "needs_deeper_qa": [
+      "Verify generateMetadata produces correct <meta> tags in rendered HTML",
+      "Test og:image rendering in social media preview tools",
+      "Verify noindex pages are excluded from search engine crawl",
+      "Test PageSettingsPanel saves ogImage/hidden/noindex to frontmatter via API",
+      "Verify sitemap.xml updates when pages are added/removed/unpublished",
+      "Test canonical URL with custom domain if configured"
+    ]
   }
 ]

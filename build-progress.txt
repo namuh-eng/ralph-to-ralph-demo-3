@@ -2388,3 +2388,41 @@ Date: 2026-04-09
 - Redirect matching normalizes paths (lowercase, strip slashes) for robust matching
 - Redirects stored in docsConfig.advanced.redirects (JSONB) — no schema migration needed
 - Used biome-ignore for array index key since redirect entries have no stable ID
+
+## Iteration 52 — feature-024: SEO Features
+Date: 2026-04-09
+
+### What was built
+- SEO utility library (`src/lib/seo.ts`) with functions for: isNoIndex, isHidden, getOgImage, buildCanonicalUrl, generateSitemapEntries, renderSitemapXml, generateRobotsTxt, buildPageMetadata
+- Sitemap.xml route (`src/app/docs/[subdomain]/sitemap.xml/route.ts`) — auto-generated XML sitemap listing all published, indexable pages with lastmod timestamps
+- Robots.txt route (`src/app/docs/[subdomain]/robots.txt/route.ts`) — respects auth settings (disallow all if site requires auth), includes sitemap URL
+- `generateMetadata` export on docs page (`src/app/docs/[subdomain]/[...slug]/page.tsx`) — per-page title, description, canonical URL, og:image, noindex robots directive
+- PageSettingsPanel wired up to save frontmatter fields: ogImage, hidden, noindex, sidebarTitle, externalUrl
+- Updated `validateUpdatePageRequest` in `src/lib/pages.ts` to accept frontmatter object
+- Updated editor PageData interface to include frontmatter field
+- Added noindex toggle to PageSettingsPanel UI
+
+### Test results
+- 32 new unit tests (seo.test.ts) — all passing
+- 5 new E2E tests (seo.spec.ts) — written, QA will verify
+- 1329 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/seo.ts — new, SEO utility functions
+- src/app/docs/[subdomain]/sitemap.xml/route.ts — new, sitemap XML route
+- src/app/docs/[subdomain]/robots.txt/route.ts — new, robots.txt route
+- src/app/docs/[subdomain]/[...slug]/page.tsx — added generateMetadata export
+- src/components/editor/page-settings-panel.tsx — wired up frontmatter fields (ogImage, hidden, noindex)
+- src/lib/pages.ts — added frontmatter validation to update page request
+- src/app/editor/main/page.tsx — pass frontmatter to PageSettingsPanel, updated PageData interface
+- tests/seo.test.ts — new, 32 unit tests
+- tests/e2e/seo.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Sitemap uses YYYY-MM-DD lastmod format from page updatedAt
+- Introduction page gets priority 1.0, others get 0.7
+- Canonical URLs use NEXT_PUBLIC_APP_URL base + /docs/{subdomain}/{path}
+- noindex pages excluded from sitemap but still accessible by direct URL
+- Cache-Control: 1 hour for sitemap and robots.txt
+- Frontmatter stored as JSONB with ogImage, hidden, noindex, sidebarTitle, externalUrl keys
