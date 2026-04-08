@@ -1722,3 +1722,38 @@ Date: 2026-04-09
 - Used GitFork icon for GitHub app since lucide-react has no Github icon
 - Billing links redirect to /settings (which redirects to general) since billing is out of scope
 - Placeholder pages use a shared component with breadcrumb + "coming soon" message
+
+## Iteration 34 — feature-013: Custom Domain Configuration
+Date: 2026-04-09
+
+### What was built
+- Custom domain settings page at /settings/project/domain with full domain management UI
+- Domain validation utility (src/lib/domains.ts): validateCustomDomain, generateCnameTarget, domainVerificationStatus
+- DNS verification API route: POST /api/projects/[id]/domain/verify — resolves CNAME records via node:dns
+- Domain input form with save/remove functionality
+- DNS CNAME instructions table showing record type, name, and target value
+- Verify DNS button that checks if CNAME is correctly configured
+- Status badges: not_configured (gray), pending (yellow), verified (green), failed (red)
+- Added domain format validation to validateUpdateProjectRequest in projects.ts
+- Integrated with existing project settings pattern (sidebar nav already configured)
+
+### Test results
+- 19 new unit tests (custom-domain.test.ts) — all passing
+- 5 new E2E tests (custom-domain.spec.ts) — written, QA will verify
+- 922 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/domains.ts — new, domain validation + CNAME target + verification status utilities
+- src/app/settings/project/domain/page.tsx — replaced placeholder with full domain management UI
+- src/app/api/projects/[id]/domain/verify/route.ts — new, DNS CNAME verification API
+- src/lib/projects.ts — added domain validation to update request handler
+- tests/custom-domain.test.ts — new, 19 unit tests
+- tests/e2e/custom-domain.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Used node:dns (built-in) for CNAME resolution instead of external DNS library
+- Store domainVerifiedAt in project.settings JSON field rather than adding a new column
+- CNAME target format: {subdomain}.mintlify-hosting.app
+- Validation rejects protocols, paths, spaces, single-label domains, and domains > 253 chars
+- Empty string for customDomain clears the domain (removes configuration)

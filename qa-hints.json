@@ -1059,5 +1059,27 @@
       "Visual match to Mintlify settings sidebar (icon alignment, spacing, colors)",
       "Old routes (/settings/organization/*, /settings/deployment/general) — verify no broken links from external sources"
     ]
+  },
+  {
+    "feature_id": "feature-013",
+    "tests_written": [
+      "validates domain format (rejects protocol, path, spaces, single-label)",
+      "accepts valid domains (bare, subdomain, nested)",
+      "generates correct CNAME target from subdomain",
+      "returns correct verification status (not_configured/pending/verified)",
+      "trims whitespace before validation",
+      "E2E: renders domain settings page with input",
+      "E2E: shows validation error for invalid domain",
+      "E2E: shows CNAME instructions after saving",
+      "E2E: verify DNS button present",
+      "E2E: remove domain button present"
+    ],
+    "needs_deeper_qa": [
+      "Real DNS verification — unit tests cover logic but actual DNS resolution needs live test",
+      "Domain verification with Cloudflare auto-configure integration not tested",
+      "TLS certificate provisioning not implemented (would need ACME/Let's Encrypt)",
+      "Concurrent domain updates — race condition if two users save simultaneously",
+      "Edge case: domain already used by another project"
+    ]
   }
 ]
