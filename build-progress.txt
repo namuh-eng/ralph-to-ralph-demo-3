@@ -1348,3 +1348,44 @@ Date: 2026-04-09
 - Response tabs show placeholder JSON examples based on status code range (2xx = success, 4xx = error)
 - Try it button scrolls to the existing API playground section rather than duplicating functionality
 - Used biome-ignore for useEffect dependency (html triggers re-wiring) following existing ApiPlayground pattern
+
+## Iteration 25 — feature-018: Agent Settings Page
+Date: 2026-04-09
+
+### What was built
+- Agent settings utility library (`src/lib/agent-settings.ts`) with types (ConnectedRepo, AgentSettingsData), plan gating check, repo name formatter, connected repos validator, settings update request validator
+- New `agent_settings` DB table with fields: orgId (unique), agentEnabled, slackConnected, slackWorkspace, githubAppInstalled, connectedRepos (JSONB array)
+- API route `GET/PUT /api/agent/settings` — session-authenticated, resolves org + plan, upserts settings, enforces plan gating (agent requires Pro/Enterprise), role-based access (viewers cannot update)
+- Agent settings client component (`src/app/products/agent/agent-settings-client.tsx`) with:
+  - Enable Agent section: toggle switch (plan-gated) or "Upgrade plan" button for free plan, "Learn more" link
+  - Slack Connection section: connection status badge (Connected/Not connected), workspace name display, "Connect Slack workspace" button
+  - GitHub App section: installation status, "Configure GitHub app" link, connected repos list with org/repo name + branch + permissions badge
+  - Linear Agent promo sidebar card: "New" badge, description, "Configure Linear" link, dismissible via X button
+- Updated agent page server component to support `?tab=settings` (default) and `?tab=jobs` views, fetching org plan and agent settings from DB
+- Custom SVG icons for GitHub and Slack (lucide-react lacks these)
+
+### Test results
+- 26 new unit tests (agent-settings.test.ts) — all passing
+- 6 new E2E tests (agent-settings.spec.ts) — written, QA will verify
+- 738 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Schema pushed to RDS Postgres via make db-push — success
+
+### Files changed
+- src/lib/db/schema.ts — added agentSettings table
+- src/lib/agent-settings.ts — new, types + validation + helpers
+- src/app/api/agent/settings/route.ts — new, GET/PUT API endpoint
+- src/app/products/agent/agent-settings-client.tsx — new, settings UI client component
+- src/app/products/agent/page.tsx — updated, tab routing (settings/jobs), org plan + settings fetching
+- tests/agent-settings.test.ts — new, 26 unit tests
+- tests/e2e/agent-settings.spec.ts — new, 6 E2E tests
+- prd.json — feature-018 build_pass set to true
+- qa-hints.json — added feature-018 QA hints
+
+### Decisions
+- Used a dedicated `agent_settings` table (not JSONB in orgs.settings) for type safety and queryability
+- Settings page is default view; jobs accessible via `?tab=jobs` query param
+- Linear promo card state is local (useState) — dismissal doesn't persist across page reloads
+- Slack and GitHub integration buttons are UI shells — actual OAuth flows are out of scope for this feature
+- Plan gating enforced both client-side (UI) and server-side (API returns 403 for free plan)
+- Used custom SVG icons for GitHub and Slack since lucide-react doesn't include them

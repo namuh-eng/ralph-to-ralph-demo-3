@@ -839,5 +839,30 @@
       "Light theme rendering of all API reference components",
       "Mobile responsive layout of endpoint page"
     ]
+  },
+  {
+    "feature_id": "feature-018",
+    "tests_written": [
+      "planSupportsAgent returns correct values for free/pro/enterprise",
+      "formatRepoName formats org/repo string",
+      "validateConnectedRepos validates and rejects various shapes",
+      "validateAgentSettingsUpdate validates all field types",
+      "validateAgentSettingsUpdate rejects empty/null body",
+      "DEFAULT_AGENT_SETTINGS has correct defaults",
+      "E2E: renders agent settings page with enable section",
+      "E2E: shows upgrade button or toggle based on plan",
+      "E2E: renders Slack connection section",
+      "E2E: renders GitHub app section",
+      "E2E: Linear Agent promo card dismissible",
+      "E2E: jobs tab still accessible via ?tab=jobs"
+    ],
+    "needs_deeper_qa": [
+      "Real Slack OAuth flow — only UI shell built, no actual OAuth",
+      "Real GitHub App installation — only UI shell, no actual OAuth",
+      "Agent toggle with Pro plan — need a pro-plan org to test enable/disable",
+      "Connected repos list rendering with real data from GitHub API",
+      "Linear Agent promo card persistence across page reloads (state is local)",
+      "Plan gating API enforcement — PUT with agentEnabled:true on free plan should return 403"
+    ]
   }
 ]
