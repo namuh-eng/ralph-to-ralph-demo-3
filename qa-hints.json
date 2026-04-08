@@ -357,5 +357,22 @@
       "Project status badge updates after deployment completes",
       "Activity table Live vs Previews tabs — Previews is placeholder"
     ]
+  },
+  {
+    "feature_id": "feature-006",
+    "tests_written": [
+      "buildQuickActionCards returns 4 cards with correct ids/hrefs/icons",
+      "buildSiteUrl prefers customDomain, falls back to subdomain path",
+      "formatDomainDisplay appends .mintlify.app to subdomain",
+      "projectStatusSummary returns correct label per state",
+      "E2E: quick action cards visible and navigable",
+      "E2E: site URL link opens in new tab"
+    ],
+    "needs_deeper_qa": [
+      "Quick action card navigation in authenticated session",
+      "Dashboard rendering with 0 deployments vs many deployments",
+      "Analytics link leads to an actual page (placeholder may 404)",
+      "Custom domain display vs subdomain display"
+    ]
   }
 ]

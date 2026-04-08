@@ -532,3 +532,35 @@ Date: 2026-04-08
 - Expanded row shows commit details (source ref, SHA) + deployment log steps matching Mintlify screenshots
 - Preview tab is placeholder — branch-based preview deployments planned for later feature
 - resolveUserProject helper extracts common org→project resolution pattern used across deployment routes
+
+## Iteration 14 — feature-006: Dashboard Overview Quick Actions
+Date: 2026-04-08
+
+### What was built
+- Dashboard utility library (`src/lib/dashboard.ts`) with buildQuickActionCards, buildSiteUrl, formatDomainDisplay, projectStatusSummary
+- Quick action cards row on dashboard: 4 cards linking to Editor, View Site, Analytics, Settings
+- Each card has icon (lucide-react), title, description, hover effect with emerald accent
+- View Site card opens docs in new tab (target="_blank")
+- Site URL in domain section now clickable link opening docs in new tab
+- data-testid attributes added for E2E testability (project-status-badge, quick-action-card, site-url-link)
+- Domain display uses formatDomainDisplay helper (customDomain or subdomain.mintlify.app)
+- Site URL uses buildSiteUrl helper (custom domain with https or /docs/subdomain path)
+
+### Test results
+- 17 new unit tests (dashboard.test.ts) — all passing
+- 5 new E2E tests (dashboard-overview.spec.ts) — written, QA will verify
+- 334 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/dashboard.ts — new, dashboard overview utilities
+- src/app/dashboard/dashboard-home-client.tsx — enhanced, quick action cards + data-testid + site URL links
+- tests/dashboard.test.ts — new, 17 unit tests
+- tests/e2e/dashboard-overview.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Quick action cards rendered as 4-column grid below project overview, above activity section
+- View Site card uses <a> tag for external link; other cards use Next.js <Link> for client navigation
+- Icon map (edit→Edit3, globe→Globe, settings→Settings, bar-chart→BarChart3) keeps icon rendering in one place
+- Analytics card links to /analytics (page to be built in future feature)
+- buildQuickActionCards returns static card definitions; view-site href filled dynamically from project subdomain/customDomain
