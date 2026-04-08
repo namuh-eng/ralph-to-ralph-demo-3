@@ -37,5 +37,30 @@
       "Concurrent uploads to same key — race condition handling",
       "Presigned URL expiry — verify 15-minute window works correctly"
     ]
+  },
+  {
+    "feature_id": "auth-001",
+    "tests_written": [
+      "middleware logic: identifies public vs protected paths correctly",
+      "middleware logic: redirects unauthenticated users from protected routes to /login",
+      "middleware logic: allows unauthenticated users on public paths",
+      "middleware logic: redirects authenticated users from /login and /signup to /dashboard",
+      "middleware logic: allows authenticated users on protected paths",
+      "auth config: exports auth server instance with handler function",
+      "auth client: exports authClient with signIn, signOut, useSession",
+      "E2E: login page renders with Google OAuth button",
+      "E2E: signup page renders with Google OAuth button",
+      "E2E: unauthenticated user redirected from /dashboard to /login",
+      "E2E: unauthenticated user redirected from /settings to /login",
+      "E2E: auth API session endpoint returns null for unauthenticated"
+    ],
+    "needs_deeper_qa": [
+      "Full Google OAuth flow — requires real Google account login via browser",
+      "Session persistence after OAuth callback — verify cookie is set and session created in DB",
+      "Session expiry and refresh — Better Auth cookie cache set to 5 minutes",
+      "Middleware redirect with return URL — currently redirects to /login without preserving original URL",
+      "Concurrent session handling — multiple tabs/devices",
+      "Test-only /api/test/create-session route is NOT accessible in production (NODE_ENV guard)"
+    ]
   }
 ]

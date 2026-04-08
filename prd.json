@@ -38,7 +38,7 @@
     "priority": 1,
     "core": true,
     "dependent_on": ["infra-001"],
-    "build_pass": false,
+    "build_pass": true,
     "qa_pass": false
   },
   {

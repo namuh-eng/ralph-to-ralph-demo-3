@@ -55,3 +55,58 @@ Date: 2026-04-08
 - 50MB max upload size — enforced at validation layer
 - Path traversal blocked by rejecting ".." in filenames
 - S3 bucket already provisioned by preflight.sh, using env var S3_BUCKET
+
+## Iteration 3 — auth-001: Better Auth with Google OAuth
+Date: 2026-04-08
+
+### What was built
+- Better Auth server config (`src/lib/auth.ts`) with Google OAuth provider and Drizzle adapter
+- Better Auth client (`src/lib/auth-client.ts`) with React hooks (useSession, signIn, signOut)
+- Auth API route handler (`src/app/api/auth/[...all]/route.ts`) — handles all auth endpoints
+- Login page (`src/app/(auth)/login/page.tsx`) — centered card with Google OAuth button, dark theme
+- Signup page (`src/app/(auth)/signup/page.tsx`) — centered card with Google OAuth button, dark theme
+- Auth layout (`src/app/(auth)/layout.tsx`) — centered flex container
+- Auth middleware (`src/middleware.ts`) — protects /dashboard/*, /settings/*, /products/* routes, redirects to /login
+- Better Auth DB schema (`src/lib/db/auth-schema.ts`) — user, session, account, verification tables
+- Dashboard placeholder page (`src/app/dashboard/page.tsx`)
+- Test-only session creation route (`src/app/api/test/create-session/route.ts`) — NODE_ENV=test guard
+- Playwright auth setup fixture (`tests/e2e/auth.setup.ts`) with storage state
+- Updated `playwright.config.ts` with auth-setup project and unauthenticated project
+- Updated `drizzle.config.ts` to include auth-schema.ts
+- Updated `src/lib/db/index.ts` to merge auth schema into Drizzle instance
+- Updated layout metadata from "Resend Clone" to "Mintlify Clone"
+
+### Test results
+- 8 new unit tests (auth.test.ts) — all passing
+- 5 new E2E tests (auth.spec.ts) — written, QA will verify
+- 73 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Auth schema pushed to RDS Postgres via make db-push — success
+
+### Files changed
+- src/lib/auth.ts — new, Better Auth server config
+- src/lib/auth-client.ts — new, Better Auth React client
+- src/lib/db/auth-schema.ts — new, user/session/account/verification tables
+- src/lib/db/index.ts — updated, merged auth schema
+- src/app/api/auth/[...all]/route.ts — new, auth API handler
+- src/app/(auth)/layout.tsx — new, auth pages layout
+- src/app/(auth)/login/page.tsx — new, login page with Google OAuth
+- src/app/(auth)/signup/page.tsx — new, signup page with Google OAuth
+- src/app/dashboard/page.tsx — new, placeholder
+- src/app/api/test/create-session/route.ts — new, E2E test helper
+- src/middleware.ts — new, auth middleware
+- tests/auth.test.ts — new, 8 unit tests
+- tests/e2e/auth.spec.ts — new, 5 E2E tests
+- tests/e2e/auth.setup.ts — new, Playwright auth fixture
+- playwright.config.ts — updated, auth setup project
+- drizzle.config.ts — updated, added auth-schema
+- src/app/layout.tsx — updated, metadata
+- package.json — added @opentelemetry/api dependency
+
+### Decisions
+- Used cookie-based session check in middleware (getSessionCookie from better-auth/cookies) — lightweight, no DB call per request
+- Session cookie cache enabled (5 min) for performance
+- Login/signup pages share same dark card design with green accent matching Mintlify brand
+- Test-only session creation route guarded by NODE_ENV=test — won't respond in production
+- Playwright config split into 3 projects: auth-setup, default (authenticated), unauthenticated (auth.spec.ts)
+- emailAndPassword not explicitly enabled — Mintlify uses Google OAuth only
