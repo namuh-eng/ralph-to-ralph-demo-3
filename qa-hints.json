@@ -864,5 +864,28 @@
       "Linear Agent promo card persistence across page reloads (state is local)",
       "Plan gating API enforcement — PUT with agentEnabled:true on free plan should return 403"
     ]
+  },
+  {
+    "feature_id": "feature-019",
+    "tests_written": [
+      "isValidDomain accepts/rejects domains",
+      "isValidEmail accepts/rejects emails",
+      "usagePercent calculates correctly and caps at 100",
+      "formatCents and formatBillingDate format correctly",
+      "validateAssistantSettingsUpdate validates all fields",
+      "rejects too many starter questions (max 3)",
+      "validates multiple fields at once",
+      "defaults have expected values"
+    ],
+    "needs_deeper_qa": [
+      "Toggle assistant on/off persists to DB and reflects in UI badge",
+      "Deflection email save and load round-trip",
+      "Add/remove search domains with validation errors",
+      "Add/remove starter questions up to max 3",
+      "Billing tab shows correct usage progress bar and stats",
+      "Tab switching preserves state",
+      "View more link navigates to /analytics/assistant",
+      "Concurrent toggle + save interactions"
+    ]
   }
 ]

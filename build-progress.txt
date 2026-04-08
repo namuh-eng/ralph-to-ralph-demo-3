@@ -1389,3 +1389,47 @@ Date: 2026-04-09
 - Slack and GitHub integration buttons are UI shells — actual OAuth flows are out of scope for this feature
 - Plan gating enforced both client-side (UI) and server-side (API returns 403 for free plan)
 - Used custom SVG icons for GitHub and Slack since lucide-react doesn't include them
+
+## Iteration 26 — feature-019: Assistant Settings Page
+Date: 2026-04-09
+
+### What was built
+- Assistant settings utility library (`src/lib/assistant-settings.ts`) with types, validation, defaults for settings and usage data
+- Database schema additions: `assistant_settings` table (projectId-scoped, enabled, deflection config, search domains JSON, starter questions JSON) and `assistant_usage` table (messages used/limit, billing cycle, pricing)
+- API route `GET /api/assistant/settings` — fetch assistant settings for current user's project
+- API route `PUT /api/assistant/settings` — update assistant settings with upsert logic, viewer role restriction, field validation
+- API route `GET /api/assistant/usage` — fetch assistant usage stats
+- Server page `/products/assistant` — fetches settings + usage from DB, passes to client component, supports `?tab=billing` query param
+- Client component with full Mintlify-matching UI:
+  - Usage stats bar at top: monthly spend, total questions, answered, not answered (4 cards)
+  - Insights card with "View more" link to /analytics/assistant
+  - General/Billing tab toggle
+  - General tab: Status & Control (toggle + Active/Inactive badge), Response Handling (deflection toggle + email input + help button checkbox + Save), Search Domains (toggle + domain input/add/remove), Starter Questions (count/3, toggle, add/remove)
+  - Billing tab: Usage & Credits Overview (progress bar, used/limit, legend), stats grid (message range, remaining, next billing, monthly price, overage), Spending Controls section
+- Domain validation (regex, max 253 chars), email validation, usage percentage calculation with 100% cap, cents formatting
+
+### Test results
+- 35 new unit tests (assistant-settings.test.ts) — all passing
+- 5 new E2E tests (assistant-settings.spec.ts) — written, QA will verify
+- 773 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Schema pushed to RDS Postgres via make db-push — success
+
+### Files changed
+- src/lib/db/schema.ts — added assistantSettings + assistantUsage tables
+- src/lib/assistant-settings.ts — new, types + validation + defaults + formatting
+- src/app/api/assistant/settings/route.ts — new, GET + PUT API routes
+- src/app/api/assistant/usage/route.ts — new, GET API route
+- src/app/products/assistant/page.tsx — new, server component
+- src/app/products/assistant/assistant-settings-client.tsx — new, full client UI
+- tests/assistant-settings.test.ts — new, 35 unit tests
+- tests/e2e/assistant-settings.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Settings scoped to projectId (not orgId) — matches Mintlify's per-project assistant config
+- Usage data stored separately from settings — different update patterns (settings are user-edited, usage incremented by system)
+- Billing tab is read-only display — no edit controls, matching screenshots (billing management is out of scope)
+- Starter questions capped at 3 — matches Mintlify UI showing "/3" count
+- Domain validation uses regex — no DNS lookup, just format check
+- Reusable Toggle component extracted within the client file — used 5 times across sections
+- StarterQuestionInput as separate component to isolate input state from parent re-renders
