@@ -1353,5 +1353,33 @@
       "Nested Expandable depth limits and styling at >3 levels",
       "Columns responsive reflow on mobile — CSS only, needs viewport testing"
     ]
+  },
+  {
+    "feature_id": "feature-005a",
+    "tests_written": [
+      "verifyWebhookSignature accepts valid and rejects invalid signatures",
+      "extractBranchFromRef parses refs/heads/* correctly",
+      "isValidPushPayload validates push payload structure",
+      "isValidInstallPayload validates install payload structure",
+      "isValidInstallationId validates positive integers",
+      "isValidRepoFullName validates owner/repo format",
+      "isValidBranchName validates branch names",
+      "matchesPushTarget matches repo + branch combos",
+      "connectionStatus returns active/inactive/no_repos",
+      "buildDeployMessage formats deploy commit message",
+      "validateCreateConnectionRequest validates create request body",
+      "webhook endpoint rejects invalid payloads",
+      "webhook endpoint ignores non-push events",
+      "webhook endpoint processes valid push events"
+    ],
+    "needs_deeper_qa": [
+      "Real GitHub App OAuth install flow — simulated in build",
+      "Webhook signature verification with actual GitHub-signed payloads",
+      "Auto-deploy triggering with real GitHub push events",
+      "Multiple repos per connection with concurrent pushes",
+      "Edge case: push to non-default branch should not trigger deploy",
+      "Connection toggle and removal UI interaction",
+      "Settings page rendering with various connection states"
+    ]
   }
 ]

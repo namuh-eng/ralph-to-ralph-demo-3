@@ -2219,3 +2219,63 @@ Date: 2026-04-09
 - View reuses existing tab-bar/tab-panel CSS pattern — extended tab click handler to recognize .view containers
 - Badge uses color prop with predefined variants; unknown colors render as class names for extensibility
 - Banner dismiss is ephemeral (per-page-load) — no localStorage persistence for simplicity
+
+## Iteration 48 — feature-005a: GitHub Webhook Auto-Deploy
+Date: 2026-04-09
+
+### What was built
+- GitHub webhook utility library (`src/lib/github-webhook.ts`) with:
+  - HMAC-SHA256 webhook signature verification using timing-safe comparison
+  - Push and installation payload validators
+  - Branch extraction from git refs (refs/heads/* → branch name)
+  - Repo full name and branch name validators
+  - Push target matching (repo + branch against connected repos list)
+  - Connection status helpers (active/inactive/no_repos)
+  - Deploy message builder from push payloads (first line, 100 char truncation)
+  - Create-connection request body validator
+- New `github_connections` DB table: id, orgId, installationId (unique), repos (JSONB array of fullName/branch/permissions), autoUpdateEnabled boolean, createdAt
+- Webhook receiver endpoint (`POST /api/webhooks/github`):
+  - Verifies HMAC-SHA256 signature when GITHUB_WEBHOOK_SECRET is set
+  - Processes only push events (ignores ping, etc.)
+  - Extracts branch from ref, finds matching GitHub connections with auto-update enabled
+  - Matches connected repos to projects by repoUrl + repoBranch
+  - Creates queued deployments and sets project status to "deploying"
+  - Returns count of triggered deployments
+- GitHub connections CRUD API (`/api/github-connections`):
+  - GET — list connections for user's org (session auth)
+  - POST — create or update connection (upsert by installationId), admin/editor only
+  - DELETE — remove connection by ID, admin only
+- GitHub App settings page (`/settings/deployment/github`) matching Mintlify screenshot:
+  - "Enable auto updates" title, "Your active GitHub app connections" subtitle
+  - "Configure GitHub app" section with install button (GitHub icon + external link)
+  - Active connections list: installation name, repo count, auto-update toggle (emerald/gray), remove button
+  - Connected repos per connection: fullName, branch badge, permissions badge
+  - Admin-gated actions (toggle, remove, install)
+  - Success/error message display
+
+### Test results
+- 51 new unit tests (github-webhook.test.ts) — all passing
+- 5 new E2E tests (github-webhook.spec.ts) — written, QA will verify
+- 1244 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Schema pushed to RDS Postgres via make db-push — success
+
+### Files changed
+- src/lib/db/schema.ts — added githubConnections table
+- src/lib/github-webhook.ts — new, webhook utilities + validation + helpers
+- src/app/api/webhooks/github/route.ts — new, webhook receiver endpoint
+- src/app/api/github-connections/route.ts — new, CRUD API for connections
+- src/app/settings/deployment/github/page.tsx — updated from placeholder to server component
+- src/app/settings/deployment/github/github-app-client.tsx — new, client UI component
+- tests/github-webhook.test.ts — new, 51 unit tests
+- tests/e2e/github-webhook.spec.ts — new, 5 E2E tests
+- prd.json — feature-005a build_pass set to true
+- qa-hints.json — added feature-005a QA hints
+
+### Decisions
+- Webhook signature verification is optional (skipped if GITHUB_WEBHOOK_SECRET not set) to simplify dev testing
+- GitHub App install flow is simulated client-side — real implementation would redirect to GitHub's install URL
+- Connection upsert by installationId prevents duplicates when re-installing
+- Repo matching: compares project.repoUrl (stripped of github.com prefix) against push payload repo full_name
+- Projects without repoUrl still get deployed if branch matches — supports initial setup before repo is configured
+- Used timing-safe comparison for webhook signature to prevent timing attacks
