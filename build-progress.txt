@@ -24,3 +24,34 @@ Date: 2026-04-08
 - userId in orgMemberships/auditLogs is text (not UUID) to match Better Auth's user.id type
 - JSON columns (settings, frontmatter, messages, data, details) typed with $type<> for TypeScript safety
 - Cascade deletes on all parent-child relationships (org->projects, project->pages, etc.)
+
+## Iteration 2 — infra-002: S3 File Upload Configuration
+Date: 2026-04-08
+
+### What was built
+- S3 utility module (`src/lib/s3.ts`) with presigned URL generation for uploads and downloads
+- Key builder function following `{orgId}/{projectId}/assets/{filename}` convention
+- Upload validation: allowed content types whitelist, path traversal protection, filename validation
+- Object lifecycle helpers: delete, exists check
+- API route `POST /api/uploads/presign` — generates presigned PUT URL for direct client-to-S3 upload
+- API route `GET /api/uploads/presign?key=...` — generates presigned GET URL for downloads
+- E2E tests for the presign API endpoint (5 tests)
+
+### Test results
+- 16 new unit tests (s3.test.ts) — all passing
+- 5 new E2E tests (uploads-api.spec.ts) — written, QA will verify
+- 65 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/s3.ts — new, S3 client + presigned URLs + validation
+- src/app/api/uploads/presign/route.ts — new, API route for presign
+- tests/s3.test.ts — new, 16 unit tests
+- tests/e2e/uploads-api.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Used allowlist for content types (images, docs, media, fonts) — blocks executables
+- 15-minute presigned URL expiry — standard for upload flows
+- 50MB max upload size — enforced at validation layer
+- Path traversal blocked by rejecting ".." in filenames
+- S3 bucket already provisioned by preflight.sh, using env var S3_BUCKET

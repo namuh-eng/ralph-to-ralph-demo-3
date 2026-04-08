@@ -13,5 +13,29 @@
       "Verify enum columns reject invalid values",
       "Verify jsonb default values are correct ({} vs [])"
     ]
+  },
+  {
+    "feature_id": "infra-002",
+    "tests_written": [
+      "buildS3Key constructs correct key with orgId/projectId/assets prefix",
+      "buildS3Key handles nested paths and strips leading slashes",
+      "getUploadPresignedUrl returns presigned URL and key",
+      "getUploadPresignedUrl uses correct content type and bucket",
+      "getDownloadPresignedUrl returns presigned URL",
+      "deleteObject sends delete command",
+      "objectExists returns true/false correctly",
+      "ALLOWED_CONTENT_TYPES includes images/docs, excludes executables",
+      "validateUploadRequest rejects empty filename, bad content types, path traversal",
+      "API route POST /api/uploads/presign returns presigned URL",
+      "API route rejects missing fields and disallowed content types",
+      "API route GET /api/uploads/presign returns download URL"
+    ],
+    "needs_deeper_qa": [
+      "Real S3 upload via presigned URL — unit tests mock the SDK",
+      "CORS headers on S3 bucket — verify browser can PUT directly",
+      "Large file upload (near 50MB limit) — only validated client-side",
+      "Concurrent uploads to same key — race condition handling",
+      "Presigned URL expiry — verify 15-minute window works correctly"
+    ]
   }
 ]
