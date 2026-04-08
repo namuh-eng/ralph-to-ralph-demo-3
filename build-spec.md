@@ -1,6 +1,6 @@
 # Build Spec — Mintlify Clone (namuh-mintlify)
 
-**Status: PARTIAL** — Docs extraction complete. Site map complete. All dashboard pages inspected. Docs site deep dive pending.
+**Status: PARTIAL** — Docs extraction complete. Site map complete. All dashboard pages inspected. Docs site inspected. Final iteration pending to finalize spec.
 
 ## Product Overview
 
@@ -74,13 +74,92 @@ Docs site: `{projectSlug}.mintlify.app/...`
 - `/signup` — Signup → org creation → onboarding
 - `/onboarding` — GitHub connection, project setup
 
-### Docs Site (*.mintlify.app)
-- **Top bar**: Logo, search, "Ask AI" button, Support, GitHub, Dashboard link, dark mode toggle
-- **Tab nav**: Guides | API reference (configurable)
-- **Left sidebar**: Navigation tree from docs.json
-- **Center content**: MDX-rendered pages with components
-- **Right panel**: AI Assistant chat panel (slide-over)
-- **Pages**: `/` (index), `/[...slug]` (any doc page)
+### Docs Site (*.mintlify.app) — Deep Dive (2026-04-08)
+
+#### Top Bar
+- **Logo**: Light/dark variants from `mintcdn.com/{project}/{hash}/logo/{variant}.svg`
+- **Search button**: "Search... ⌘K" — opens Headless UI dialog (full overlay with input, transitions in/out). Search is full-text across all docs pages.
+- **"Ask AI" button**: Toggle for assistant panel (data-state=closed/open)
+- **Support**: mailto: link
+- **GitHub link**: icon-only
+- **Dashboard link**: "Dashboard" button linking to `dashboard.mintlify.com`
+- **Dark mode toggle**: Toggles between light/dark themes. Default: dark mode.
+- **Mobile**: Search and Ask AI become icon-only buttons, "More actions" hamburger menu
+
+#### Tab Navigation
+- Configurable tabs at top: "Guides" | "API reference" (from docs.json `tabs` config)
+- Active tab underlined. Tabs route to different sidebar navigation trees.
+
+#### Left Sidebar (~260px)
+- **External links**: Documentation, Blog (top of sidebar, separate from nav tree)
+- **Navigation tree**: Groups with bold headings (e.g. "Getting started", "Customization", "Writing content", "AI tools")
+- **Pages**: Indented under groups with icons. Active page has green highlight background.
+- **Scrollable container**: `#sidebar-content` is independently scrollable
+
+#### Center Content (~720px)
+- **Breadcrumb**: Group name above H1 (e.g. "Getting started" above "Introduction")
+- **H1 title**: Large heading with "Copy page" button (copies page as markdown) and "More actions" dropdown (kebab)
+- **Description**: Subtitle text below H1
+- **MDX components rendered**:
+  - **Cards/CardGroups**: Grid layout, each card has icon + title + description, clickable (links to page)
+  - **Steps**: Expandable `<details>` elements with numbered step titles and content
+  - **Callouts/Notes**: Colored sidebar strips (Note = blue info icon)
+  - **Code blocks**: Syntax highlighted with file name label header, copy button, "Ask AI" button per code block
+  - **Inline code**: Backtick-styled spans (`word` or `phrase`)
+  - **Headings**: Each generates an anchor (`#heading-slug`) and TOC entry
+  - **Links**: Internal links navigate within docs, external open new tab
+- **Previous/Next navigation**: Bottom of page, left arrow for previous page, right arrow for next page
+- **Heading anchors**: Hover to reveal `[​]` anchor link icon next to each heading
+
+#### Right Panel — Table of Contents (~240px)
+- "On this page" heading
+- Auto-generated from H2/H3 headings on current page
+- Clickable anchor links
+- Sticky positioning (follows scroll)
+
+#### AI Assistant Chat Panel
+- **Trigger**: "Ask AI" button in top bar
+- **Panel**: Fixed at bottom of page (not a slide-over on docs site — it's an inline chat bar)
+- **Input**: textarea placeholder "Ask a question...", file upload button, send button
+- **File upload**: Accepts images, PDFs, code files (.js, .ts, .py, .md, .json, etc.)
+- **Disclaimer**: "Responses are generated using AI and may contain mistakes."
+- **Chat content area**: Scrollable conversation history
+
+#### API Reference Pages (special layout)
+- Sidebar shows API-specific nav: "API documentation" group, "Endpoint examples" group
+- **HTTP method badges** in sidebar: GET (green), POST (blue), DEL (red), HOOK (purple)
+- **Endpoint header**: Method badge (e.g. `GET`) + URL path (e.g. `/plants`) + "Try it ▶" button
+- **Code block**: cURL example with language selector dropdown (cURL default), copy button, Ask AI button
+- **Response tabs**: Status code tabs (200, 400) with JSON response body
+- **Authorizations section**: Shows auth type (Bearer token) with field details
+- **Parameters section**: Query/path parameters with name, type, description, required badge
+- **Response schema**: Field names, types, descriptions, required indicators
+- **API playground**: "Try it" button sends real HTTP requests (not functional in starter kit but UI is present)
+
+#### Footer
+- **Social links**: X (Twitter), GitHub, LinkedIn — icon-only links
+- **"Powered by mintlify"**: Branded footer link with tooltip "This documentation is built and hosted on Mintlify"
+
+#### Design System — Docs Site Colors (from CSS custom properties)
+- `--primary`: `22 163 74` (rgb) → **#16A34A** (green)
+- `--primary-light`: `7 201 131` → **#07C983** (lighter green)
+- `--primary-dark`: `21 128 61` → **#15803D** (darker green)
+- `--background-dark`: `9 13 13` → **#090D0D** (near-black)
+- `--background-light`: `255 255 255` → **#FFFFFF** (white)
+- **Font body**: Inter (with fallback chain: -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif)
+- **Font mono**: JetBrains Mono (with fallbacks: SF Mono, Menlo, Monaco, Consolas, Courier New)
+- **Code theme**: Twoslash-compatible syntax highlighting (green annotations, orange warnings, red errors)
+
+#### Page Types
+1. **Content page**: Standard MDX rendered with components (Cards, Steps, Callouts, Code blocks)
+2. **API reference intro**: Overview with links to endpoints
+3. **API endpoint page**: Method+URL, code example, response tabs, auth, params, response schema
+4. **Blog** (external link to mintlify.com/blog)
+
+#### URLs
+- Home/Introduction: `/`
+- Content pages: `/{...slug}` (e.g. `/quickstart`, `/essentials/markdown`, `/essentials/code`)
+- API reference: `/api-reference/introduction`, `/api-reference/endpoint/{slug}`
 
 ### Global UI Elements
 - **Profile menu**: Your profile, Invite members, Billing, Theme (System/Light/Dark), Documentation, Contact support, Log Out

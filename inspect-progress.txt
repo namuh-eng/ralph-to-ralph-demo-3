@@ -246,3 +246,41 @@
 ### What's next:
 - Iteration 8: Docs site deep dive — public-facing documentation site layout, navigation, components, search, AI assistant chat
 - Then: Final iteration — finalize build-spec.md with all sections complete
+
+## Iteration 8 — Docs Site Deep Dive (2026-04-08)
+
+### What was done:
+- Navigated to docs site at namuh.mintlify.app and inspected all major features
+- Tested **top bar**: logo (light/dark variants from mintcdn.com), search button (⌘K), Ask AI toggle, Support/GitHub/Dashboard links, dark mode toggle
+- Tested **search dialog**: Headless UI dialog with search input, overlay with transition animation
+- Tested **dark mode toggle**: Successfully switches between dark/light themes
+- Tested **sidebar navigation**: Navigation tree with groups (Getting started, Customization, Writing content, AI tools), active page highlighted green, scrollable container
+- Tested **tab navigation**: Guides | API reference tabs switch entire sidebar nav tree
+- Inspected **Introduction page** (home): Cards/CardGroups with icons+titles+descriptions, heading anchors, "Copy page" button
+- Inspected **Quickstart page**: Steps component (expandable <details> elements), three-step wizard
+- Inspected **Code blocks page**: Inline code, fenced code blocks with syntax highlighting, file name labels (HelloWorld.java), copy/Ask AI buttons
+- Inspected **API reference intro**: API documentation group, endpoint examples with HTTP method badges (GET/POST/DEL/HOOK)
+- Inspected **API endpoint page** (Get Plants): Method badge + URL path, "Try it ▶" button, cURL code block with language selector, response tabs (200/400), Authorizations section, Query Parameters, Response schema
+- Tested **AI assistant chat panel**: Fixed at bottom, textarea input, file upload support (images, PDFs, code files), send button, disclaimer text
+- Inspected **page footer**: Social icons (X, GitHub, LinkedIn), "Powered by mintlify" branding
+- Inspected **previous/next navigation**: Arrow links at bottom of each content page
+- Extracted **CSS custom properties**: --primary (22 163 74 = #16A34A), --primary-light (#07C983), --primary-dark (#15803D), --background-dark (#090D0D), --background-light (#FFFFFF)
+- Confirmed **fonts**: Inter for body, JetBrains Mono for code
+- Took 10 screenshots across docs site states (home, search, quickstart, code blocks, API intro, API endpoint, light mode, etc.)
+- Updated build-spec.md with comprehensive Docs Site deep dive section
+- Added 6 new PRD entries (feature-014a through feature-015a, feature-004a)
+
+### Key findings:
+- Docs site uses Headless UI for search dialog (not Radix like dashboard)
+- AI assistant is an inline chat bar at page bottom (not a slide-over panel as on dashboard)
+- Code blocks have per-block "Ask AI" button — opens assistant with code context
+- API endpoint pages have rich auto-generated documentation from OpenAPI spec: method badges, cURL examples, response tabs, auth/params/schema sections
+- "Copy page" copies full page content as markdown (not just URL)
+- Logo served from CDN at mintcdn.com with light/dark variants
+- Footer includes social links + "Powered by" branding
+- Tab navigation (Guides/API reference) completely swaps the sidebar nav tree
+- Search uses opacity transition animation that may not render in headless browser
+- Mobile responsiveness: search/AI become icons, hamburger menu for navigation
+
+### What's next:
+- Iteration 9: Final iteration — finalize build-spec.md with all sections complete, add dependent_on to all PRD entries, reorder PRD by implementation priority
