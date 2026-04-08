@@ -564,3 +564,39 @@ Date: 2026-04-08
 - Icon map (edit→Edit3, globe→Globe, settings→Settings, bar-chart→BarChart3) keeps icon rendering in one place
 - Analytics card links to /analytics (page to be built in future feature)
 - buildQuickActionCards returns static card definitions; view-site href filled dynamically from project subdomain/customDomain
+
+## Iteration 7 — feature-014: Docs Site Layout
+Date: 2026-04-08
+
+### What was built
+- **Theme toggle**: Light/dark mode with localStorage persistence, ThemeProvider context, ThemeToggle button (sun/moon icons). Defaults to dark. Applied via `data-theme` attribute on `<html>`.
+- **Search modal**: Full overlay with input, filters pages by title/path (case-insensitive). Opens via ⌘K / Ctrl+K keyboard shortcut or clicking search button. Closes with Escape or clicking overlay. Results link to doc pages.
+- **Mobile responsive**: Hamburger menu button (hidden on desktop, visible ≤768px). MobileSidebar overlay with full nav, closes on page navigation or Escape. Body scroll locked when open.
+- **DocsTopbar**: Extracted topbar into dedicated client component integrating search button, theme toggle, mobile menu, and logo link.
+- **Layout polish**: TOC width updated 220→240px per spec. Responsive breakpoints: ≤1024px hides TOC, ≤768px hides sidebar and shows hamburger. Search text/kbd hidden on mobile.
+- **Light theme CSS**: Complete light mode styles for all docs components (content prose, cards, callouts, code blocks, tabs, accordions, search modal, mobile sidebar, pagination, TOC).
+- **Layout constants**: Exported LAYOUT_WIDTHS (sidebar: 260, toc: 240, maxContent: 1440) for consistency.
+
+### Test results
+- 12 new unit tests (docs-site-layout.test.ts) — all passing
+- 8 new E2E tests (docs-site-layout.spec.ts) — written, QA will verify
+- 346 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/components/docs/theme-provider.tsx — new, ThemeProvider + ThemeToggle + storage helpers
+- src/components/docs/search-modal.tsx — new, SearchModal + filterPages + handleSearchShortcut
+- src/components/docs/mobile-nav.tsx — new, MobileMenuButton + MobileSidebar
+- src/components/docs/docs-topbar.tsx — new, extracted DocsTopbar with all top bar UI
+- src/components/docs/layout-constants.ts — new, LAYOUT_WIDTHS export
+- src/app/docs/[subdomain]/layout.tsx — updated, wraps children in ThemeProvider
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, uses DocsTopbar, SearchModal, MobileSidebar
+- src/app/globals.css — updated, theme toggle styles, search modal styles, mobile nav styles, responsive breakpoints, complete light theme CSS, TOC width 220→240px
+- tests/docs-site-layout.test.ts — new, 12 unit tests
+- tests/e2e/docs-site-layout.spec.ts — new, 8 E2E tests
+
+### Decisions
+- Theme stored in localStorage (key: "docs-theme"), applied via data-theme attribute on html element for CSS specificity
+- Used native <dialog> element for search modal (Biome a11y compliance)
+- Mobile sidebar communicates via CustomEvents (toggle-mobile-sidebar, open-search) to avoid prop drilling between server/client components
+- Responsive breakpoints: 768px (mobile — sidebar hides, hamburger shows), 1024px (tablet — TOC hides)

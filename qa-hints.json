@@ -374,5 +374,27 @@
       "Analytics link leads to an actual page (placeholder may 404)",
       "Custom domain display vs subdomain display"
     ]
+  },
+  {
+    "feature_id": "feature-014",
+    "tests_written": [
+      "theme defaults to dark",
+      "theme persists to localStorage",
+      "theme rejects invalid localStorage values",
+      "search modal opens on Cmd+K",
+      "search does NOT open on bare K key",
+      "search filters pages case-insensitively",
+      "search returns all pages on empty query",
+      "MobileMenuButton and MobileSidebar components export",
+      "layout width constants match spec (260/240/1440)"
+    ],
+    "needs_deeper_qa": [
+      "Visual regression: light vs dark mode across all MDX components (cards, callouts, code blocks, tabs)",
+      "Mobile viewport: hamburger opens/closes sidebar overlay, page navigation closes overlay",
+      "Search modal: keyboard navigation through results (arrow keys, enter to select)",
+      "Theme persistence across page navigations and browser reload",
+      "TOC scroll spy accuracy with many headings",
+      "Responsive breakpoints: 768px mobile, 1024px tablet (TOC hides)"
+    ]
   }
 ]
