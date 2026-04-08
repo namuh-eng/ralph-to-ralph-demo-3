@@ -624,5 +624,27 @@
       "Very long search queries (close to 200 char limit)",
       "Search with special characters (quotes, backslashes, SQL wildcards)"
     ]
+  },
+  {
+    "feature_id": "api-003",
+    "tests_written": [
+      "parseExportParams parses projectId, dateFrom, dateTo, limit, offset",
+      "parseExportParams defaults limit=100, offset=0",
+      "parseExportParams clamps limit to MAX_LIMIT (1000)",
+      "parseExportParams resets invalid values to defaults",
+      "paginatedResponse wraps data with pagination metadata",
+      "isValidDateString accepts/rejects date formats",
+      "All 7 endpoints reject unauthenticated requests (401)",
+      "All 7 endpoints return JSON error on invalid key"
+    ],
+    "needs_deeper_qa": [
+      "Test with real admin API key to verify 200 responses with actual data",
+      "Verify pagination offset/limit work correctly with real dataset",
+      "Verify dateFrom/dateTo filtering returns correct date ranges",
+      "Test assistant-caller-stats aggregation math (avg messages per conversation)",
+      "Test feedback-by-page helpful/notHelpful counts with real feedback events",
+      "Verify mode() aggregate in visitors endpoint returns correct top page/referrer",
+      "Edge case: very large offset returns empty data array with correct total"
+    ]
   }
 ]

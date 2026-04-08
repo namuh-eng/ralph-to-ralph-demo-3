@@ -985,3 +985,45 @@ Date: 2026-04-09
 - Recent searches stored in localStorage (max 5) — persists across sessions
 - Results grouped by first path segment — matches Mintlify's section-based layout
 - Snippets strip markdown and center around first query match (160 char window)
+
+## Iteration 16 — api-003: REST API Analytics Export Endpoints
+Date: 2026-04-09
+
+### What was built
+- Shared analytics export utility library (`src/lib/analytics-export.ts`) with parseExportParams, paginatedResponse, isValidDateString — handles dateFrom/dateTo date parsing, limit/offset pagination with defaults (100/0) and max (1000)
+- 7 REST API export endpoints under `/api/v1/analytics/`, all with admin API key auth:
+  1. `GET /api/v1/analytics/views` — daily page view counts, paginated
+  2. `GET /api/v1/analytics/visitors` — daily visitor counts with top page and referrer per day
+  3. `GET /api/v1/analytics/feedback` — individual feedback events (page, rating, comment)
+  4. `GET /api/v1/analytics/searches` — search queries aggregated by count
+  5. `GET /api/v1/analytics/assistant-conversations` — full conversation exports with messages
+  6. `GET /api/v1/analytics/assistant-caller-stats` — daily conversation count, total/avg messages
+  7. `GET /api/v1/analytics/feedback-by-page` — feedback aggregated per page (helpful/not helpful counts)
+- All endpoints: Bearer admin API key auth, projectId ownership check, dateFrom/dateTo date filtering, limit/offset pagination, JSON response envelope `{ data, pagination: { total, limit, offset } }`
+
+### Test results
+- 13 new unit tests (analytics-export.test.ts) — all passing
+- 21 new E2E tests (analytics-export.spec.ts) — written, QA will verify
+- 529 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/analytics-export.ts — new, shared export utilities
+- src/app/api/v1/analytics/views/route.ts — new
+- src/app/api/v1/analytics/visitors/route.ts — new
+- src/app/api/v1/analytics/feedback/route.ts — new
+- src/app/api/v1/analytics/searches/route.ts — new
+- src/app/api/v1/analytics/assistant-conversations/route.ts — new
+- src/app/api/v1/analytics/assistant-caller-stats/route.ts — new
+- src/app/api/v1/analytics/feedback-by-page/route.ts — new
+- tests/analytics-export.test.ts — new, 13 unit tests
+- tests/e2e/analytics-export.spec.ts — new, 21 E2E tests
+
+### Decisions
+- Used /api/v1/analytics/* path to match existing v1 API pattern
+- Admin-only auth: assistant keys get 401 (not 403) since they shouldn't know these endpoints exist
+- Response envelope uses { data, pagination } for consistency and forward-compatibility
+- Views endpoint aggregates by date; visitors adds top page/referrer per day via mode() aggregate
+- Searches aggregates by query string with count; feedback-by-page uses filter(where) for helpful/not_helpful counts
+- Assistant conversations returns full message arrays; caller-stats aggregates using jsonb_array_length
+- Date boundaries: dateFrom → T00:00:00Z, dateTo → T23:59:59.999Z (inclusive range)
