@@ -1629,3 +1629,40 @@ Date: 2026-04-09
 - 2-column grid matches Mintlify screenshot layout; collapses to 1 column on mobile
 - Creation form is a placeholder — "Create workflow" button disabled since workflow execution is a separate future feature
 - Template defaults (trigger, prompt) pre-fill form fields via URL query param
+
+## Iteration 32 — feature-020a: Workflow Creation Form
+Date: 2026-04-09
+
+### What was built
+- **Workflows DB table**: New `workflows` table with columns: id, projectId, name, triggerType (enum: on_pr_merge, on_schedule), triggerConfig (JSON), prompt, autoMerge, contextRepos (JSON), slackNotify, timestamps
+- **API route**: `GET/POST /api/workflows` — list and create workflows with full validation (name required/max 256, triggerType must be on_pr_merge or on_schedule, prompt required/max 10000)
+- **Full creation form** matching Mintlify's workflow creation UI:
+  - Name text input (pre-filled from template)
+  - Trigger type radio buttons with icons (PR merge vs Schedule)
+  - PR merge: repo search selector (placeholder, no repos connected yet)
+  - Schedule: frequency buttons (Daily/Weekly/Monthly/Custom) + time picker + dynamic description
+  - Prompt textarea with helper text
+  - Settings section: context repos toggle, auto-merge toggle (default on)
+  - Notifications: Slack toggle with icon
+  - Create workflow button with disabled state, loading state, error display
+  - Back arrow navigation to template picker
+- Replaced previous placeholder form with fully functional version
+
+### Test results
+- 17 new unit tests (workflow-creation.test.ts) — all passing
+- 7 new E2E tests added to workflows.spec.ts — trigger types, schedule frequency, repo search, toggles, disabled button
+- 884 total unit tests — all passing
+- make check (typecheck + lint) — passing
+- Schema pushed to RDS Postgres — success
+
+### Files changed
+- src/lib/db/schema.ts — added workflowTriggerTypeEnum + workflows table
+- src/app/api/workflows/route.ts — new, GET + POST endpoints
+- src/app/products/workflows/new/new-workflow-client.tsx — rewritten with full form
+- tests/workflow-creation.test.ts — new, 17 unit tests
+- tests/e2e/workflows.spec.ts — added 7 E2E tests for creation form
+
+### Decisions
+- Mapped template triggers (on_merge, on_schedule, on_commit, on_file_change) to simplified DB enum (on_pr_merge, on_schedule) matching the 2-option UI
+- triggerConfig is a JSON column that holds different shapes depending on trigger type (repos array for PR merge, frequency/time for schedule)
+- No actual Slack or GitHub integration — toggles and repo selector are UI-ready but show placeholders

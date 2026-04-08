@@ -1009,5 +1009,32 @@
       "Keyboard navigation through template cards",
       "URL state preservation when navigating back from creation form"
     ]
+  },
+  {
+    "feature_id": "feature-020a",
+    "tests_written": [
+      "workflows schema has expected columns",
+      "trigger type enum has correct values (on_pr_merge, on_schedule)",
+      "template to trigger type mapping works",
+      "validation rejects empty name, whitespace name, long name",
+      "validation rejects invalid trigger type",
+      "validation rejects empty or too-long prompt",
+      "accepts valid on_pr_merge and on_schedule workflows",
+      "trigger config shapes for PR merge and schedule",
+      "E2E: trigger type radio buttons visible",
+      "E2E: schedule shows frequency buttons on switch",
+      "E2E: PR merge shows repo search",
+      "E2E: settings and slack toggles visible",
+      "E2E: create button disabled with empty name",
+      "E2E: schedule description updates with frequency"
+    ],
+    "needs_deeper_qa": [
+      "Actual workflow creation with real DB — unit tests validate logic only",
+      "Repo selector dropdown — shows \"No repositories available\" placeholder, needs connected repos",
+      "Custom cron input validation — no client-side validation of cron expression",
+      "Form submission error handling — network errors, server errors",
+      "Slack notification toggle — no actual Slack integration yet",
+      "Auto-merge toggle state persisted correctly in DB"
+    ]
   }
 ]

@@ -708,7 +708,7 @@
       "feature-020",
       "feature-018"
     ],
-    "build_pass": false,
+    "build_pass": true,
     "qa_pass": false
   },
   {
