@@ -1117,7 +1117,7 @@
       "feature-014",
       "feature-024"
     ],
-    "build_pass": false,
+    "build_pass": true,
     "qa_pass": false
   },
   {

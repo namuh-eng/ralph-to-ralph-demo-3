@@ -2545,3 +2545,38 @@ Date: 2026-04-09
 - Go examples use standard net/http — no third-party Go libraries
 - DB pages take priority over virtual pages when both exist for same path
 - Virtual pages are merged into sidebar nav and searchable pages for full integration
+
+## Iteration 56 — feature-028: Multi-language docs (i18n)
+Date: 2026-04-09
+
+### What was built
+- i18n utility library (`src/lib/i18n.ts`) with 28 supported languages (ISO 639-1), locale validation, URL parsing, path building, hreflang tag generation, page filtering by locale, and available-locales detection
+- Language switcher component (`src/components/docs/language-switcher.tsx`) — dropdown in topbar with globe icon, shows available locales with native names, navigates between language versions
+- Updated docs page routing (`src/app/docs/[subdomain]/[...slug]/page.tsx`) — parses locale from URL slug, filters pages by locale for navigation, builds locale-aware DB paths, adds hreflang metadata
+- CSS for language switcher with dark and light theme variants
+- Languages config stored in `project.settings.languages` (JSONB) — enabled flag, default language, supported languages list
+- Path-based locale encoding: default language has no URL prefix, other languages use `/{locale}/` prefix (e.g., `/docs/proj/fr/getting-started`)
+- hreflang SEO tags auto-generated in metadata for all supported locales plus x-default
+
+### Test results
+- 34 new unit tests (i18n.test.ts) — all passing
+- 5 new E2E tests (i18n.spec.ts) — written, QA will verify
+- 1433 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/i18n.ts — new, i18n utilities (28 languages, locale parsing, hreflang, filtering)
+- src/components/docs/language-switcher.tsx — new, language switcher dropdown component
+- src/components/docs/docs-topbar.tsx — updated, accepts i18n props, renders language switcher
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, locale-aware routing + hreflang metadata
+- src/app/globals.css — updated, language switcher CSS (dark + light themes)
+- tests/i18n.test.ts — new, 34 unit tests
+- tests/e2e/i18n.spec.ts — new, 5 E2E tests
+
+### Decisions
+- Path-based locale encoding (no schema change): default language pages stored without prefix, other languages as "{locale}/{path}" — backward compatible
+- Default language has no URL prefix to maintain clean URLs for the primary audience
+- Language switcher only renders when i18n is enabled AND multiple languages are configured
+- Pages filtered by locale for navigation sidebar — each language gets its own nav tree
+- hreflang x-default always points to default language version
+- Used `<nav>` element for dropdown instead of listbox role to satisfy Biome a11y rules

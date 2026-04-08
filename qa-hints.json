@@ -1545,5 +1545,29 @@
       "Prev/next pagination between virtual pages and DB pages",
       "Auto-regeneration of pages when spec changes on deploy"
     ]
+  },
+  {
+    "feature_id": "feature-028",
+    "tests_written": [
+      "isValidLocale returns true for supported codes, false for unsupported",
+      "getLanguageInfo returns language metadata including RTL direction",
+      "mergeLanguagesConfig merges partial with defaults",
+      "validateLanguagesConfig rejects invalid default, unsupported codes, duplicates",
+      "parseLocaleFromSlug extracts locale from URL, handles disabled i18n",
+      "buildLocalizedPath builds correct URL with/without locale prefix",
+      "buildLocalePagePath prefixes non-default locale paths",
+      "generateHreflangTags generates tags for all locales plus x-default",
+      "filterPagesByLocale filters and strips locale prefix from paths",
+      "getAvailableLocalesForPage returns locales that have the page translated"
+    ],
+    "needs_deeper_qa": [
+      "Language switcher navigation — verify URL updates correctly on locale switch",
+      "RTL language support (Arabic, Hebrew) — page layout direction",
+      "hreflang tags in HTML head — verify correct values via view-source",
+      "Navigation sidebar updates per-locale — different page trees per language",
+      "Default language pages accessible without locale prefix",
+      "SEO: sitemap entries for multi-language pages",
+      "Edge case: page exists in only some languages — switcher shows correct options"
+    ]
   }
 ]
