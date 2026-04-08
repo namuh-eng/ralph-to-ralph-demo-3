@@ -1592,5 +1592,26 @@
       "Close-on-click-outside behavior for version dropdown",
       "Visual consistency with language switcher styling (dark + light themes)"
     ]
+  },
+  {
+    "feature_id": "feature-030",
+    "tests_written": [
+      "renders inline math expressions ($...$)",
+      "renders block math equations ($$...$$)",
+      "renders Greek letters and fractions",
+      "renders integrals and matrices in display mode",
+      "protects code blocks from LaTeX processing",
+      "handles escaped dollar signs",
+      "handles invalid LaTeX gracefully",
+      "KaTeX CSS URL validation"
+    ],
+    "needs_deeper_qa": [
+      "Visual rendering fidelity — KaTeX CSS may differ from Mintlify production",
+      "Complex LaTeX edge cases (nested environments, aligned equations)",
+      "Performance with many math expressions on a single page",
+      "Interaction with other content features (Mermaid, code blocks with $ signs)",
+      "CDN availability of KaTeX CSS — fallback if CDN is down",
+      "Math inside component blocks (Tabs, Accordions, Cards) — may need separate processing"
+    ]
   }
 ]

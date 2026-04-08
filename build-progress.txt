@@ -2616,3 +2616,38 @@ Date: 2026-04-09
 - Version switcher only renders when versioning is enabled AND multiple versions are configured
 - Mirrors language switcher UX pattern: dropdown with icon, click outside to close, active highlight
 - "Default" badge uses green styling consistent with brand color
+
+## Iteration 58 — feature-030: LaTeX math rendering
+Date: 2026-04-09
+
+### What was built
+- LaTeX rendering library (`src/lib/latex.ts`) with KaTeX server-side rendering:
+  - `renderLatex()` — processes HTML content, converting `$...$` (inline) and `$$...$$` (block) math delimiters to rendered KaTeX HTML
+  - Code block protection — skips math inside `<code>`, `<pre>`, and `<script>` tags
+  - Graceful error handling — invalid LaTeX renders as error spans instead of crashing
+  - `KATEX_CSS_URL` constant for CDN stylesheet auto-loading
+- Integrated LaTeX rendering into docs page pipeline: applied after `renderMdxContent()` when `docsConfig.contentFeatures.latex` is enabled
+- KaTeX CSS stylesheet auto-loaded via `<link>` tag when LaTeX is enabled in project settings
+- No client-side JavaScript needed — all math rendered at build time on the server
+
+### Test results
+- 21 new unit tests (latex.test.ts) — all passing
+- 5 new E2E tests (latex.spec.ts) — written, QA will verify
+- 1495 total unit tests — all passing
+- make check (typecheck + lint) — passing
+
+### Files changed
+- src/lib/latex.ts — new, KaTeX server-side rendering (inline/block math, code protection, error handling)
+- src/app/docs/[subdomain]/[...slug]/page.tsx — updated, LaTeX rendering integration + KaTeX CSS loading
+- tests/latex.test.ts — new, 21 unit tests
+- tests/e2e/latex.spec.ts — new, 5 E2E tests
+- prd.json — feature-030 build_pass set to true
+- qa-hints.json — added feature-030 QA hints
+
+### Decisions
+- Server-side rendering with KaTeX — no client-side JS needed, renders at build time
+- Code block protection uses regex to extract and restore `<pre>`, `<code>`, `<script>` tags before processing
+- Inline math: `$...$` (no newlines allowed inside), Block math: `$$...$$` (allows multiline)
+- KaTeX configured with `throwOnError: false` for graceful degradation
+- CDN-hosted KaTeX CSS stylesheet (jsdelivr) auto-loaded when latex enabled
+- LaTeX processing happens after MDX rendering, so it works with all content types
