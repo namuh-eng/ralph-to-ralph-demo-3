@@ -219,5 +219,25 @@
     ],
     "bugs_found": [],
     "fix_description": "no fix needed"
+  },
+  {
+    "feature_id": "feature-003",
+    "attempt": 1,
+    "status": "pass",
+    "tested_steps": [
+      "Ran `make test` and confirmed the unit suite passed with 1538 tests.",
+      "Restarted the local dev server in `PLAYWRIGHT_TEST=true` mode so Playwright and live browser QA used the same authenticated-capable environment, then verified `POST /api/test/create-session` returned `200 OK`.",
+      "Ran `PLAYWRIGHT_TEST=true npx playwright test tests/e2e/smoke.spec.ts` and confirmed all 11 smoke tests passed.",
+      "Ran `PLAYWRIGHT_TEST=true npx playwright test tests/e2e/editor-dual-mode.spec.ts` and confirmed all 9 dual-mode editor tests passed, including the visual-toolbar placeholder insertion check.",
+      "Used Ever CLI on `http://localhost:3015/editor/main` with a live authenticated session to open a dedicated QA page, seed rich MDX content, and verify visual mode rendered live heading, bold, italic, and link formatting plus interactive MDX previews for Note, Card, and Tab blocks. Saved evidence to `ralph/screenshots/qa/feature-003-visual-rich-content.jpg`.",
+      "Switched the same page from visual mode to markdown mode and confirmed the raw MDX preserved frontmatter, headings, link syntax, Note/Card/Tab component syntax, and later round-tripped back to visual mode without data loss.",
+      "Triggered markdown editing through the live textarea, waited for the 2 second debounce, and verified auto-save persisted `### Auto Saved Heading` both through the UI TOC update and through `GET /api/projects/:id/pages/:pageId` returning the saved MDX.",
+      "Opened the Add new dropdown in markdown mode, verified the Tab/Dropdown/Anchor/Card/Columns/Language/Product/Version options rendered, inserted a Card snippet at the cursor, waited for auto-save, and confirmed both the textarea content and the saved API payload contained the inserted Card block.",
+      "Opened Page settings in Ever, changed the page title, slug, and description through the blur-driven form, and verified the updated values reflected in the sidebar/header, the page API response, and Postgres. Saved evidence to `ralph/screenshots/qa/feature-003-settings-saved.jpg`.",
+      "Updated the page to a 568-line MDX document, confirmed visual mode still rendered and generated TOC anchors through Section 550, switched to markdown mode, and verified the line-number gutter scroll stayed exactly in sync with the textarea (`scrollTop` 1200 on both elements). Saved evidence to `ralph/screenshots/qa/feature-003-large-doc-markdown.jpg`.",
+      "Queried Postgres directly for the QA page row and confirmed the persisted record stored title `QA Feature 003 Settings Saved`, path `qa/feature-003-settings-saved`, description `Saved via page settings panel`, and `content_length` 27643."
+    ],
+    "bugs_found": [],
+    "fix_description": "no fix needed"
   }
 ]
