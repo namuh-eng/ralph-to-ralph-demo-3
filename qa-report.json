@@ -165,5 +165,25 @@
       }
     ],
     "fix_description": "Updated the dashboard/settings layout E2E specs to target the actual accessible roles, avoid invalidating shared auth state mid-suite, and use precise placeholder-page assertions; the product shell itself passed the manual and automated QA checks."
+  },
+  {
+    "feature_id": "feature-001",
+    "attempt": 1,
+    "status": "pass",
+    "tested_steps": [
+      "Ran `make test` and confirmed the unit suite passed with 1527 tests.",
+      "Ran `npx playwright test tests/e2e/smoke.spec.ts` and confirmed all 11 smoke tests passed with the authenticated Playwright setup.",
+      "Started the dev server with `PLAYWRIGHT_TEST=true npm run dev` so the live app, test-session route, browser checks, and API verification all exercised the same running environment.",
+      "Used Ever CLI on `http://localhost:3015/dashboard/new-project` with a live authenticated session to create `QA Feature 001 Alpha` with a GitHub repo URL, verified the app redirected back to `/dashboard`, and verified the new project became the active project in the sidebar and dashboard shell. Saved screenshots to `ralph/screenshots/qa/feature-001-dashboard-after-create.jpg` and `ralph/screenshots/qa/feature-001-project-selector-open.jpg`.",
+      "Used the sidebar project selector in Ever to verify all projects in the org were listed and the active project switched when another project was selected.",
+      "Used Ever CLI on `http://localhost:3015/settings/project/general` to update the active project's name and deployment subdomain, observed the `Changes saved` confirmation, refreshed the dashboard, and verified the renamed project and edited subdomain rendered in the shell and site preview. Saved a screenshot to `ralph/screenshots/qa/feature-001-settings-saved.jpg`.",
+      "Queried Postgres directly after the settings save and confirmed the edited project row persisted the updated `name`, `subdomain`, and repo URL in the `projects` table.",
+      "Created a fresh isolated admin org via `POST /api/test/create-session`, attempted to `DELETE` its only project through `DELETE /api/projects/:id`, and confirmed the live API returned `400 Cannot delete the organization's last project`.",
+      "Created a second isolated admin org and verified slug collision handling by creating two `Slug Clash` projects through `POST /api/projects`; the first project used `slug-clash` and the second persisted a suffixed slug `slug-clash-mnqsuezd` with matching subdomains.",
+      "Created an `Update Target` project through the API, updated it through `PUT /api/projects/:id`, and confirmed the response plus a direct Postgres query both showed `Update Target Edited` with the edited subdomain and unchanged repo URL.",
+      "Created editor and viewer users in the same org through the test-session route plus direct membership inserts, then verified both received `403 Only admins can delete projects` on `DELETE /api/projects/:id` while the admin session deleted the same target project successfully with `200`, and confirmed the project row was removed from Postgres."
+    ],
+    "bugs_found": [],
+    "fix_description": "no fix needed"
   }
 ]

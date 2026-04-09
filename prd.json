@@ -95,7 +95,7 @@
     "core": true,
     "dependent_on": ["auth-002", "infra-001"],
     "build_pass": true,
-    "qa_pass": false
+    "qa_pass": true
   },
   {
     "id": "onboard-001",
